@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ryan Guerrero-Moreno — Portfolio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Ballet&family=Inter:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#005B8D;
+  --lavender:#B5B1D8;
+  --gray:#70727C;
+  --bg:#FAFAF9;
+  --text:#1C1A18;
+  --text2:#6E6A63;
+  --font:'Inter',-apple-system,sans-serif;
+  --display:'Ballet',cursive;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+.wrap{max-width:760px;margin:0 auto;padding:80px 24px 64px}
+
+.mark{font-family:var(--display);font-size:64px;color:var(--navy);line-height:1;margin-bottom:16px}
+
+h1{font-size:28px;font-weight:500;margin-bottom:8px}
+.tagline{font-size:15px;color:var(--text2);margin-bottom:48px;max-width:480px}
+
+.links{display:flex;gap:16px;margin-bottom:64px;font-size:13px}
+.links a{color:var(--navy);text-decoration:none;border-bottom:1px solid transparent}
+.links a:hover{border-bottom-color:var(--navy)}
+
+.section-label{font-size:11px;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid #E5E2DC}
+
+.projects{display:flex;flex-direction:column;gap:1px;background:#E5E2DC;border:1px solid #E5E2DC;border-radius:12px;overflow:hidden}
+
+.project{background:var(--bg);padding:24px 28px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;transition:background .15s}
+.project:hover{background:#fff}
+.project:hover .project-name{color:var(--navy)}
+
+.project-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.project-name{font-size:16px;font-weight:500;transition:color .15s}
+.project-tag{font-size:11px;color:var(--gray);background:var(--lavender);padding:3px 10px;border-radius:20px;white-space:nowrap}
+.project-desc{font-size:13px;color:var(--text2);max-width:520px}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid #E5E2DC;font-size:12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="mark">R</div>
+  <h1>Ryan Guerrero-Moreno</h1>
+  <p class="tagline">Product leader with a research background. A few things I've built to explore how I think about data, design, and discovery.</p>
+
+  <div class="links">
+    <a href="https://www.linkedin.com/in/ryangm">LinkedIn</a>
+    <a href="mailto:ryan.d.guerrero@gmail.com">Email</a>
+    <a href="https://github.com/RGM-Builds">GitHub</a>
+  </div>
+
+  <div class="section-label">Projects</div>
+
+  <div class="projects">
+    <a class="project" href="winsignal.html">
+      <div class="project-row">
+        <span class="project-name">WinSignal</span>
+        <span class="project-tag">Dashboard concept</span>
+      </div>
+      <p class="project-desc">A sales analytics dashboard with flip-to-reveal analysis, built around the kind of insight infrastructure I designed at LinkedIn.</p>
+    </a>
+
+    <a class="project" href="palette-catalog.html">
+      <div class="project-row">
+        <span class="project-name">Combinations</span>
+        <span class="project-tag">Design catalog</span>
+      </div>
+      <p class="project-desc">A browsable color palette catalog with search and filtering, exploring type and layout craft.</p>
+    </a>
+  </div>
+
+  <footer>
+    Built with Claude.
+  </footer>
+
+</div>
+</body>
+</html>

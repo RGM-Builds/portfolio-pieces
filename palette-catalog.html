@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combinations — A Color Palette Catalog</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F7;--surface:#fff;--border:#EAE7E2;--border2:#D9D4CC;
+  --text:#1C1A18;--text2:#6E6A63;--text3:#B5AFA6;
+  --accent:#730F1F;
+  --r:12px;--font:'Inter',-apple-system,sans-serif;--serif:'DM Serif Display',Georgia,serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
+
+/* NAV */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:30}
+.nav-logo{font-family:var(--serif);font-size:19px;color:var(--text);display:flex;align-items:center;gap:10px}
+.nav-logo .sw{display:flex;gap:2px}
+.nav-logo .sw span{width:9px;height:18px;border-radius:1px}
+.nav-sub{font-size:11px;color:var(--text3);margin-left:2px}
+.nav-right{display:flex;align-items:center;gap:10px}
+
+/* SEARCH/FILTER BAR */
+.search-input{font-size:12.5px;padding:7px 14px;border:1px solid var(--border2);border-radius:20px;background:var(--bg);font-family:var(--font);outline:none;width:220px;color:var(--text)}
+.search-input:focus{border-color:var(--accent)}
+.filter-pill{font-size:11.5px;padding:6px 13px;border:1px solid var(--border2);border-radius:20px;background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);transition:all .12s;white-space:nowrap}
+.filter-pill:hover{background:var(--bg)}
+.filter-pill.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* HERO */
+.hero{padding:40px 32px 28px;max-width:1280px;margin:0 auto}
+.hero-eyebrow{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
+.hero h1{font-family:var(--serif);font-size:38px;line-height:1.2;margin-bottom:10px;max-width:640px}
+.hero p{font-size:14px;color:var(--text2);line-height:1.7;max-width:620px}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;padding:0 32px 24px;max-width:1280px;margin:0 auto;align-items:center}
+.filter-row .divider-v{width:1px;height:20px;background:var(--border2);margin:0 4px}
+
+/* GRID */
+.grid{max-width:1280px;margin:0 auto;padding:0 32px 64px;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+
+/* PALETTE CARD */
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .15s, box-shadow .15s}
+.pcard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.06)}
+.swatch-row{display:flex;height:100px}
+.swatch{flex:1;position:relative}
+.pcard-body{padding:14px 16px}
+.pcard-name{font-family:var(--serif);font-size:17px;margin-bottom:3px}
+.pcard-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg);color:var(--text2);border:1px solid var(--border)}
+.pcard-desc{font-size:12px;color:var(--text2);line-height:1.55}
+.pcard-hex{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.hexchip{font-size:10px;color:var(--text3);font-family:'SF Mono',Monaco,monospace;display:flex;align-items:center;gap:4px}
+.hexchip .dot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(0,0,0,0.08)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(28,26,24,0.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;max-width:760px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,0.25)}
+.modal-swatches{display:flex;height:160px}
+.modal-swatch{flex:1;position:relative;display:flex;align-items:flex-end;padding:12px}
+.modal-swatch .hex-label{font-size:11px;font-family:'SF Mono',Monaco,monospace;background:rgba(255,255,255,0.85);padding:3px 8px;border-radius:5px;color:#1C1A18;font-weight:500;opacity:0;transition:opacity .12s;cursor:pointer}
+.modal-swatch:hover .hex-label{opacity:1}
+.modal-body{padding:28px 32px}
+.modal-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.modal-name{font-family:var(--serif);font-size:28px}
+.modal-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);flex-shrink:0}
+.modal-close:hover{background:var(--bg)}
+.modal-tags{display:flex;gap:6px;margin-bottom:16px}
+.modal-desc{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:20px}
+.modal-section-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;margin-top:22px}
+.color-detail-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.color-detail-row:last-child{border-bottom:none}
+.cd-swatch{width:36px;height:36px;border-radius:8px;flex-shrink:0;border:1px solid rgba(0,0,0,0.06)}
+.cd-info{flex:1}
+.cd-name{font-size:12.5px;font-weight:500}
+.cd-hex{font-size:11px;color:var(--text3);font-family:'SF Mono',Monaco,monospace}
+.cd-copy{font-size:11px;color:var(--text2);padding:4px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);cursor:pointer;font-family:var(--font);flex-shrink:0}
+.cd-copy:hover{background:var(--bg)}
+.usage-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.usage-card{border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);line-height:1.6}
+.usage-card strong{color:var(--text);display:block;margin-bottom:3px;font-size:12.5px}
+.copy-all-btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:8px 16px;border-radius:8px;background:var(--text);color:#fff;border:none;cursor:pointer;font-family:var(--font);margin-top:6px}
+.copy-all-btn:hover{opacity:.88}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:10px 20px;border-radius:8px;font-size:12.5px;opacity:0;transition:all .25s;z-index:200;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* responsive */
+@media (max-width:640px){.hero h1{font-size:28px}.grid{grid-template-columns:1fr 1fr;gap:12px}.swatch-row{height:80px}.modal-swatches{height:110px}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <span class="sw"><span style="background:#730F1F"></span><span style="background:#F2AD78"></span><span style="background:#718600"></span><span style="background:#008AA1"></span></span>
+    Combinations
+    <span class="nav-sub">— a palette catalog</span>
+  </div>
+  <div class="nav-right">
+    <input class="search-input" id="searchInput" type="text" placeholder="Search by name, mood, or color..." oninput="filterPalettes()">
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">For marketing &amp; brand teams</div>
+  <h1>A working library of color combinations</h1>
+  <p>Inspired by Sanzo Wada's <em>A Dictionary of Color Combinations</em> — each palette pairs a small set of harmonious tones with a name, a mood, and notes on where it works best across decks, campaigns, and product surfaces. Click any palette for hex codes, usage guidance, and one-click copy.</p>
+</div>
+
+<div class="filter-row" id="filterRow">
+  <button class="filter-pill active" data-mood="all" onclick="setFilter('all',this)">All</button>
+  <div class="divider-v"></div>
+  <button class="filter-pill" data-mood="warm" onclick="setFilter('warm',this)">Warm &amp; earthy</button>
+  <button class="filter-pill" data-mood="cool" onclick="setFilter('cool',this)">Cool &amp; calm</button>
+  <button class="filter-pill" data-mood="bold" onclick="setFilter('bold',this)">Bold &amp; energetic</button>
+  <button class="filter-pill" data-mood="muted" onclick="setFilter('muted',this)">Muted &amp; refined</button>
+  <button class="filter-pill" data-mood="bright" onclick="setFilter('bright',this)">Bright &amp; playful</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalBg(event)">
+  <div class="modal" id="modal"></div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+// ─────────────────────────────────────────
+// PALETTE DATA — names & framing inspired by
+// Sanzo Wada's "A Dictionary of Color Combinations"
+// ─────────────────────────────────────────
+const palettes = [
+  {
+    name: "Karakurenai & Moss",
+    moods: ["warm","bold"],
+    desc: "A deep crimson-brown anchors a palette of warm peach and quiet olive, with a single cool teal note for contrast. Confident without being loud — works well for premium or heritage brand positioning.",
+    colors: [
+      { name: "Karakurenai (Deep Crimson)", hex: "#730F1F" },
+      { name: "Sunaha (Peach Sand)", hex: "#F2AD78" },
+      { name: "Koke (Moss)", hex: "#718600" },
+      { name: "Hanada (Pond Teal)", hex: "#008AA1" }
+    ],
+    usage: [
+      { title: "Slide decks", body: "Use Karakurenai for section dividers and key stat callouts; Sunaha for body backgrounds to keep contrast soft." },
+      { title: "Product UI", body: "Teal works well for primary actions against neutral backgrounds; reserve crimson for high-emphasis states only." }
+    ]
+  },
+  {
+    name: "Indigo & Persimmon",
+    moods: ["bold","bright"],
+    desc: "A classic Japanese pairing — deep indigo blue set against vivid persimmon orange. High contrast and instantly recognizable; ideal for campaigns that need to stop the scroll.",
+    colors: [
+      { name: "Kon (Indigo)", hex: "#1B3A5C" },
+      { name: "Kaki (Persimmon)", hex: "#E8703A" },
+      { name: "Gofun (Shell White)", hex: "#F5F1E8" },
+      { name: "Sumi (Ink)", hex: "#2B2724" }
+    ],
+    usage: [
+      { title: "Campaign hero", body: "Indigo as the dominant field with persimmon for CTAs creates an immediate focal point with strong color memory." },
+      { title: "Print collateral", body: "Shell white as the page base keeps the pairing from feeling aggressive in long-form layouts." }
+    ]
+  },
+  {
+    name: "Sage & Sumi Ink",
+    moods: ["muted","cool"],
+    desc: "A restrained, editorial palette pairing sage green with near-black ink and warm grey. Reads as quietly confident — well suited to wellness, finance, or B2B SaaS brands.",
+    colors: [
+      { name: "Sumi (Ink)", hex: "#2B2724" },
+      { name: "Yanagi (Willow Sage)", hex: "#8A9B6E" },
+      { name: "Nezu (Mouse Grey)", hex: "#A8A29E" },
+      { name: "Gofun (Shell White)", hex: "#F5F1E8" }
+    ],
+    usage: [
+      { title: "Annual reports", body: "Sage as an accent on charts and pull-quotes keeps data-heavy pages from feeling cold." },
+      { title: "Website", body: "Ink for typography, shell white for surfaces, sage reserved for icons and small highlights only." }
+    ]
+  },
+  {
+    name: "Plum & Marigold",
+    moods: ["bold","warm"],
+    desc: "Rich aubergine plum paired with a saturated marigold yellow. A combination with strong seasonal warmth — effective for autumn campaigns or food & beverage branding.",
+    colors: [
+      { name: "Budō (Grape Plum)", hex: "#5C2A4A" },
+      { name: "Kihada (Marigold)", hex: "#F0B429" },
+      { name: "Akane (Madder Red)", hex: "#B5402F" },
+      { name: "Kinari (Raw Linen)", hex: "#EFE6D8" }
+    ],
+    usage: [
+      { title: "Social posts", body: "Marigold as background with plum typography gives strong legibility and warmth without red's intensity." },
+      { title: "Packaging", body: "Use madder red sparingly as a third accent — too much alongside marigold competes for attention." }
+    ]
+  },
+  {
+    name: "Pond & Pine",
+    moods: ["cool","muted"],
+    desc: "A calm, nature-led combination of pond teal, pine green, and warm stone. Evokes outdoor, sustainability, and travel themes without leaning cliché-green.",
+    colors: [
+      { name: "Hanada (Pond Teal)", hex: "#008AA1" },
+      { name: "Matsuba (Pine)", hex: "#3A5A40" },
+      { name: "Tsuchi (Stone)", hex: "#C9BFAE" },
+      { name: "Sumi (Ink)", hex: "#2B2724" }
+    ],
+    usage: [
+      { title: "Sustainability reports", body: "Pine and stone as primary surfaces with teal for data highlights communicates credibility without greenwashing tropes." },
+      { title: "App onboarding", body: "Teal for primary actions, pine for success states — both colors read as calm and trustworthy." }
+    ]
+  },
+  {
+    name: "Coral & Cream",
+    moods: ["bright","warm"],
+    desc: "A friendly, approachable pairing of warm coral and soft cream with a muted olive grounding tone. Suits consumer apps, lifestyle brands, and anything wanting to feel human and warm.",
+    colors: [
+      { name: "Sango (Coral)", hex: "#F2AD78" },
+      { name: "Kinari (Raw Linen)", hex: "#EFE6D8" },
+      { name: "Koke (Moss Olive)", hex: "#718600" },
+      { name: "Karakurenai (Deep Crimson)", hex: "#730F1F" }
+    ],
+    usage: [
+      { title: "Onboarding flows", body: "Cream backgrounds with coral accents feel light and welcoming; reserve crimson for error or critical states only." },
+      { title: "Email marketing", body: "Coral CTAs against cream backgrounds perform well for warmth without the urgency of pure red." }
+    ]
+  },
+  {
+    name: "Midnight & Citrine",
+    moods: ["bold","cool"],
+    desc: "Deep navy paired with a sharp citrine yellow-green. A high-energy combination that works well for tech, gaming, or evening event branding.",
+    colors: [
+      { name: "Ruri (Lapis Navy)", hex: "#1C2D4F" },
+      { name: "Kihada (Citrine)", hex: "#D9CB3B" },
+      { name: "Hanada (Pond Teal)", hex: "#008AA1" },
+      { name: "Gofun (Shell White)", hex: "#F5F1E8" }
+    ],
+    usage: [
+      { title: "Dark-mode UI", body: "Navy as the base surface with citrine for active states creates strong contrast that holds up at low brightness." },
+      { title: "Event branding", body: "Use citrine sparingly — as a single accent color it photographs well under stage lighting." }
+    ]
+  },
+  {
+    name: "Terracotta & Slate",
+    moods: ["warm","muted"],
+    desc: "Earthy terracotta against cool slate grey, with cream as a breathing space. A grounded, architectural palette suited to real estate, design studios, or editorial brands.",
+    colors: [
+      { name: "Tobiiro (Terracotta)", hex: "#B5654A" },
+      { name: "Nezu (Slate Grey)", hex: "#6E6A63" },
+      { name: "Kinari (Raw Linen)", hex: "#EFE6D8" },
+      { name: "Sumi (Ink)", hex: "#2B2724" }
+    ],
+    usage: [
+      { title: "Portfolio sites", body: "Slate typography on linen backgrounds with terracotta as the single accent color keeps focus on imagery." },
+      { title: "Presentation decks", body: "Terracotta works well for chart highlights against slate axis lines and labels." }
+    ]
+  },
+  {
+    name: "Saffron & Ash",
+    moods: ["bright","muted"],
+    desc: "A single vivid saffron accent against layered greys. Minimal and modern — ideal for tech products that want one confident brand color without overwhelming the interface.",
+    colors: [
+      { name: "Ukon (Saffron)", hex: "#E8A23D" },
+      { name: "Hai (Ash Grey)", hex: "#D6D3D1" },
+      { name: "Nezu (Mouse Grey)", hex: "#8C8880" },
+      { name: "Sumi (Ink)", hex: "#1C1A18" }
+    ],
+    usage: [
+      { title: "SaaS dashboards", body: "Greys for structure and typography, saffron reserved entirely for primary actions and notifications." },
+      { title: "Pitch decks", body: "Saffron on dark ink slides creates a premium, focused feel for key metrics or callouts." }
+    ]
+  },
+  {
+    name: "Wisteria & Pewter",
+    moods: ["cool","muted"],
+    desc: "Soft wisteria purple paired with cool pewter and warm cream. Gentle and sophisticated — well suited to beauty, healthcare, or premium lifestyle branding.",
+    colors: [
+      { name: "Fuji (Wisteria)", hex: "#9B8AA8" },
+      { name: "Suzu (Pewter)", hex: "#A8A29E" },
+      { name: "Kinari (Raw Linen)", hex: "#EFE6D8" },
+      { name: "Budō (Grape Plum)", hex: "#5C2A4A" }
+    ],
+    usage: [
+      { title: "Beauty packaging", body: "Wisteria as the dominant tone with pewter typography feels calm and premium without being cold." },
+      { title: "App icons", body: "Plum as a deep accent for icon backgrounds gives enough contrast against wisteria UI elements." }
+    ]
+  },
+  {
+    name: "Ochre & Denim",
+    moods: ["warm","cool"],
+    desc: "A balanced pairing of warm ochre and cool denim blue — neither tone dominates. Versatile for brands that want to feel both approachable and dependable.",
+    colors: [
+      { name: "Kihada (Ochre)", hex: "#D4A23C" },
+      { name: "Kachi (Denim)", hex: "#3D5A73" },
+      { name: "Kinari (Raw Linen)", hex: "#EFE6D8" },
+      { name: "Sumi (Ink)", hex: "#2B2724" }
+    ],
+    usage: [
+      { title: "B2B websites", body: "Denim for navigation and structure, ochre for CTAs — creates clear visual hierarchy without high contrast fatigue." },
+      { title: "Infographics", body: "The balanced warmth/coolness makes this pairing easy to extend with tints for multi-series charts." }
+    ]
+  },
+  {
+    name: "Vermilion & Bamboo",
+    moods: ["bold","bright"],
+    desc: "A striking pairing of vermilion red and fresh bamboo green. High energy and traditionally auspicious — strong for limited-time campaigns or seasonal launches.",
+    colors: [
+      { name: "Shu (Vermilion)", hex: "#C4432B" },
+      { name: "Take (Bamboo Green)", hex: "#7FA653" },
+      { name: "Kinari (Raw Linen)", hex: "#EFE6D8" },
+      { name: "Sumi (Ink)", hex: "#2B2724" }
+    ],
+    usage: [
+      { title: "Promotional banners", body: "Vermilion as the dominant field with bamboo accents creates urgency while staying feeling natural rather than alarming." },
+      { title: "Social campaigns", body: "Works especially well for short-term seasonal pushes — high memorability, not intended for long-term brand systems." }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────
+// Render
+// ─────────────────────────────────────────
+const grid = document.getElementById('grid');
+let currentFilter = 'all';
+let currentSearch = '';
+
+function renderGrid(){
+  grid.innerHTML = '';
+  const filtered = palettes.filter(p => {
+    const moodMatch = currentFilter === 'all' || p.moods.includes(currentFilter);
+    const searchMatch = currentSearch === '' ||
+      p.name.toLowerCase().includes(currentSearch) ||
+      p.desc.toLowerCase().includes(currentSearch) ||
+      p.colors.some(c => c.name.toLowerCase().includes(currentSearch) || c.hex.toLowerCase().includes(currentSearch)) ||
+      p.moods.some(m => m.includes(currentSearch));
+    return moodMatch && searchMatch;
+  });
+
+  if(filtered.length === 0){
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text3);font-size:13px">No palettes match your search.</div>';
+    return;
+  }
+
+  filtered.forEach((p, idx) => {
+    const realIdx = palettes.indexOf(p);
+    const card = document.createElement('div');
+    card.className = 'pcard';
+    card.onclick = () => openModal(realIdx);
+    card.innerHTML = `
+      <div class="swatch-row">
+        ${p.colors.map(c => `<div class="swatch" style="background:${c.hex}"></div>`).join('')}
+      </div>
+      <div class="pcard-body">
+        <div class="pcard-name">${p.name}</div>
+        <div class="pcard-tags">${p.moods.map(m => `<span class="tag">${moodLabel(m)}</span>`).join('')}</div>
+        <div class="pcard-desc">${truncate(p.desc, 110)}</div>
+        <div class="pcard-hex">
+          ${p.colors.map(c => `<span class="hexchip"><span class="dot" style="background:${c.hex}"></span>${c.hex}</span>`).join('')}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function moodLabel(m){
+  const map = { warm:'Warm', cool:'Cool', bold:'Bold', muted:'Muted', bright:'Bright' };
+  return map[m] || m;
+}
+
+function truncate(s, n){
+  return s.length > n ? s.slice(0, n).trim() + '…' : s;
+}
+
+function setFilter(mood, btn){
+  currentFilter = mood;
+  document.querySelectorAll('#filterRow .filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function filterPalettes(){
+  currentSearch = document.getElementById('searchInput').value.toLowerCase().trim();
+  renderGrid();
+}
+
+// ─────────────────────────────────────────
+// Modal
+// ─────────────────────────────────────────
+const overlay = document.getElementById('modalOverlay');
+const modal = document.getElementById('modal');
+
+function openModal(idx){
+  const p = palettes[idx];
+  modal.innerHTML = `
+    <div class="modal-swatches">
+      ${p.colors.map(c => `
+        <div class="modal-swatch" style="background:${c.hex}" onclick="event.stopPropagation();copyText('${c.hex}')">
+          <span class="hex-label">${c.hex}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="modal-body">
+      <div class="modal-hd">
+        <div>
+          <div class="modal-name">${p.name}</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-tags">${p.moods.map(m => `<span class="tag">${moodLabel(m)}</span>`).join('')}</div>
+      <div class="modal-desc">${p.desc}</div>
+
+      <div class="modal-section-title">Colors in this combination</div>
+      ${p.colors.map(c => `
+        <div class="color-detail-row">
+          <div class="cd-swatch" style="background:${c.hex}"></div>
+          <div class="cd-info">
+            <div class="cd-name">${c.name}</div>
+            <div class="cd-hex">${c.hex}</div>
+          </div>
+          <button class="cd-copy" onclick="copyText('${c.hex}')">Copy hex</button>
+        </div>
+      `).join('')}
+
+      <div class="modal-section-title">Where this works</div>
+      <div class="usage-grid">
+        ${p.usage.map(u => `
+          <div class="usage-card"><strong>${u.title}</strong>${u.body}</div>
+        `).join('')}
+      </div>
+
+      <button class="copy-all-btn" onclick="copyAll(${idx})">⎘ Copy all hex codes</button>
+    </div>
+  `;
+  overlay.classList.add('open');
+}
+
+function closeModal(){
+  overlay.classList.remove('open');
+}
+function closeModalBg(e){
+  if(e.target === overlay) closeModal();
+}
+
+function copyText(text){
+  navigator.clipboard.writeText(text).then(() => showToast(`Copied ${text}`));
+}
+function copyAll(idx){
+  const hexes = palettes[idx].colors.map(c => c.hex).join(', ');
+  navigator.clipboard.writeText(hexes).then(() => showToast('All hex codes copied'));
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeModal();
+});
+
+renderGrid();
+</script>
+</body>
+</html>
