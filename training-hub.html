@@ -1978,19 +1978,10 @@ async function safeList(prefix, shared){
 
 async function init(){
   render();
-  // try to restore a session from a lightweight personal marker
-  const savedName = await safeGet("session:lastuser", false);
-  if(savedName){
-    try{
-      const parsed = JSON.parse(savedName);
-      STATE.user = parsed;
-      STATE.screen = "hub";
-    }catch(e){
-      STATE.screen = "gate";
-    }
-  } else {
-    STATE.screen = "gate";
-  }
+  // Portfolio prototype: skip the sign-in gate and drop straight into the hub
+  // as a demo learner, so visitors see the actual training experience immediately.
+  STATE.user = { name: "Demo Learner", role: "learner" };
+  STATE.screen = "hub";
   render();
 }
 
