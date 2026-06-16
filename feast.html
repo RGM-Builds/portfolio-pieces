@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feast</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F7F5;--surface:#fff;--border:#EBEBEA;--border2:#D6D3D1;
+  --text:#111110;--text2:#6B6966;--text3:#B0ADA9;
+  --purple:#730F1F;--purple-lt:#FBE8EA;--purple-dk:#730F1F;
+  --green:#718600;--green-lt:#EAF0CC;--green-dk:#4A5900;
+  --amber:#F2AD78;--amber-lt:#FDF1E6;--amber-dk:#8A4A1F;
+  --red:#730F1F;--red-lt:#FBE8EA;--red-dk:#730F1F;
+  --blue:#008AA1;--blue-lt:#E0F2F5;
+  --r:12px;--font:'Inter',-apple-system,sans-serif
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:13px}
+
+/* NAV */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:20}
+.nav-logo{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.nav-badge{background:var(--purple);color:#fff;font-size:10px;padding:1px 6px;border-radius:4px}
+.nav-right{display:flex;align-items:center;gap:8px}
+.sync-chip{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);padding:4px 10px;border:1px solid var(--border);border-radius:20px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.sdot.amber{background:var(--amber)}
+.date-btn{font-size:12px;color:var(--text2);padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);cursor:pointer;font-family:var(--font)}
+.date-btn:hover{background:var(--bg)}
+
+/* INSIGHT BANNER */
+.insight-bar{background:var(--purple-dk);padding:14px 32px;display:flex;align-items:flex-start;gap:14px}
+.insight-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.insight-text{font-size:13px;color:rgba(255,255,255,0.9);line-height:1.6;flex:1}
+.insight-text strong{color:#fff;font-weight:600}
+.insight-edit{flex-shrink:0;display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer;padding:4px 10px;border:1px solid rgba(255,255,255,0.15);border-radius:5px;background:transparent;font-family:var(--font);transition:all 0.15s}
+.insight-edit:hover{color:#fff;border-color:rgba(255,255,255,0.4)}
+.insight-textarea{width:100%;background:transparent;border:none;outline:none;font-family:var(--font);font-size:13px;color:#fff;line-height:1.6;resize:none;min-height:52px}
+
+/* PAGE */
+.page{max-width:1100px;margin:0 auto;padding:24px 32px 48px}
+
+/* KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px}
+.kpi-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.kpi-val{font-size:30px;font-weight:600;line-height:1;color:var(--text);margin-bottom:7px}
+.kpi-delta{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px}
+.up{background:var(--green-lt);color:var(--green-dk)}
+.dn{background:var(--red-lt);color:var(--red-dk)}
+
+/* GRIDS */
+.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
+.two-col-even{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+
+/* CARD (flip wrapper) */
+.flip-outer{perspective:1200px}
+.flip-inner{position:relative;transform-style:preserve-3d;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);width:100%;height:100%}
+.flip-inner.flipped{transform:rotateY(180deg)}
+.card-face{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.card-face.back{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotateY(180deg);overflow:auto}
+
+/* CARD HEADER */
+.card-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+.card-hd-left{display:flex;flex-direction:column;gap:2px;min-width:0}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.card-sub{font-size:11px;color:var(--text3)}
+.card-hd-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+
+/* ICON BUTTONS */
+.icon-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--text3);transition:all 0.12s;flex-shrink:0;font-family:var(--font)}
+.icon-btn:hover{background:var(--bg);color:var(--text2);border-color:var(--border2)}
+
+/* INFO TOOLTIP */
+.info-wrap{position:relative;display:inline-flex}
+.tooltip{position:absolute;top:calc(100% + 6px);right:0;width:240px;background:var(--text);color:#fff;font-size:11.5px;line-height:1.55;padding:10px 12px;border-radius:8px;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,0.18);pointer-events:none;opacity:0;transform:translateY(-4px);transition:all 0.15s}
+.tooltip.visible{opacity:1;transform:translateY(0)}
+.tooltip::before{content:'';position:absolute;top:-5px;right:9px;width:9px;height:9px;background:var(--text);transform:rotate(45deg);border-radius:1px}
+.tooltip strong{color:#F2AD78;font-weight:600}
+
+/* SEG CONTROL */
+.seg{display:inline-flex;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:2px;gap:2px}
+.seg-btn{padding:3px 10px;font-size:11px;border-radius:5px;cursor:pointer;color:var(--text2);background:transparent;border:none;font-family:var(--font);transition:all .12s}
+.seg-btn.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+/* CHART */
+.chart-wrap{position:relative;width:100%}
+
+/* BACK CARD (analysis) */
+.analysis-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.analysis-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.analysis-body{font-size:13px;color:var(--text2);line-height:1.7;width:100%;min-height:80px;border:none;outline:none;resize:none;font-family:var(--font);background:transparent}
+.analysis-hint{font-size:11px;color:var(--text3);margin-top:8px}
+.divider{height:1px;background:var(--border);margin:12px 0}
+
+/* REP LIST */
+.rep-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border)}
+.rep-row:last-child{border-bottom:none}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.rep-info{flex:1;min-width:0}
+.rep-name{font-size:12px;font-weight:500}
+.rep-sub{font-size:10.5px;color:var(--text3)}
+.rep-stats{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
+.rep-pct{font-size:13px;font-weight:600}
+.rep-touches{font-size:10px;color:var(--text3)}
+
+/* COMBO */
+.combo{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.combo:last-child{border-bottom:none}
+.pills{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.pill{padding:2px 7px;border-radius:20px;font-size:11px;background:var(--bg);border:1px solid var(--border);color:var(--text2)}
+.combo-right{text-align:right;flex-shrink:0}
+.combo-pct{font-size:13px;font-weight:600}
+.combo-csat{font-size:10.5px;color:var(--text3)}
+
+/* LEGEND */
+.legend{display:flex;gap:12px;margin-bottom:10px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* DONUT WRAPPER */
+.donut-wrap{display:flex;align-items:center;gap:20px}
+.donut-stats{display:flex;flex-direction:column;gap:12px}
+.donut-stat-val{font-size:22px;font-weight:600}
+.donut-stat-lbl{font-size:11px;color:var(--text3)}
+
+/* EDITABLE HIGHLIGHT */
+.analysis-body:focus{background:var(--bg);border-radius:6px;padding:4px 6px;margin:-4px -6px}
+
+/* TOUCH BREAKDOWN — clickable touches + modal */
+.touches-link{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:var(--text3);transition:color .12s}
+.touches-link:hover{color:var(--purple)}
+.modal-overlay{position:fixed;inset:0;background:rgba(17,17,16,0.45);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .15s}
+.modal-overlay.visible{opacity:1;pointer-events:auto}
+.modal{background:var(--surface);border-radius:var(--r);padding:20px 22px;width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.2);transform:translateY(8px);transition:transform .15s}
+.modal-overlay.visible .modal{transform:translateY(0)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.modal-title{font-size:13px;font-weight:600;color:var(--text)}
+.modal-sub{font-size:11px;color:var(--text3);margin-bottom:14px}
+.modal-close{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text3);font-size:13px;display:flex;align-items:center;justify-content:center;font-family:var(--font)}
+.modal-close:hover{background:var(--bg)}
+.touch-row{display:flex;align-items:center;gap:8px;padding:5px 0}
+.touch-lbl{font-size:11.5px;color:var(--text2);width:90px;flex-shrink:0}
+.touch-bar-wrap{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.touch-bar{height:100%;border-radius:4px}
+.touch-val{font-size:11.5px;font-weight:600;color:var(--text);width:32px;text-align:right;flex-shrink:0}
+
+/* ATTAINMENT TOGGLE */
+.attain-toggle{display:flex;gap:2px}
+</style>
+</head>
+<body>
+
+<!-- TOUCHPOINT MODAL -->
+<div class="modal-overlay" id="touchModal" onclick="if(event.target===this)closeTouchModal()">
+  <div class="modal">
+    <div class="modal-hd">
+      <span class="modal-title" id="touchModalTitle">Touchpoint breakdown</span>
+      <button class="modal-close" onclick="closeTouchModal()">✕</button>
+    </div>
+    <div class="modal-sub" id="touchModalSub">By channel · last 90d</div>
+    <div id="touchModalBody"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">Feast <span class="nav-badge">Q2 2026</span></div>
+  <div class="nav-right">
+    <div class="sync-chip"><span class="sdot"></span>Salesforce</div>
+    <div class="sync-chip"><span class="sdot"></span>Gong</div>
+    <div class="sync-chip"><span class="sdot amber"></span>Dialpad</div>
+    <button class="date-btn">Last 90 days ▾</button>
+  </div>
+</nav>
+
+<!-- INSIGHT BANNER -->
+<div class="insight-bar">
+  <span class="insight-icon">✦</span>
+  <div class="insight-text" id="insightDisplay">
+    <strong>Win rate is up 4.1pp this quarter to 64.2%</strong>, driven largely by FinTech and Healthcare where we close at 82% and 76% respectively.
+    Technical Validation is where deals die most: 134 of 312 deals (43%) close lost at this stage — the single biggest leak in the funnel.
+    Accounts on the Recruiter + Jobs bundle renew at 94%; Jobs-only accounts churn at nearly double the rate.
+  </div>
+  <button class="insight-edit" id="insightEditBtn" onclick="toggleInsightEdit()">✎ Edit</button>
+</div>
+
+<div class="page">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Win rate</div>
+      <div class="kpi-val">64.2%</div>
+      <span class="kpi-delta up">↑ +4.1pp vs last quarter</span>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Deals closed won</div>
+      <div class="kpi-val">544</div>
+      <span class="kpi-delta up">↑ +67 deals</span>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Avg deal cycle</div>
+      <div class="kpi-val">38<span style="font-size:17px;font-weight:400;color:var(--text3)">d</span></div>
+      <span class="kpi-delta up">↑ 6 days faster</span>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Renewal rate</div>
+      <div class="kpi-val">89.3%</div>
+      <span class="kpi-delta dn">↓ –1.2pp vs last quarter</span>
+    </div>
+  </div>
+
+  <!-- ROW 1: Trend + Donut -->
+  <div class="two-col">
+
+    <!-- Trend card -->
+    <div class="flip-outer" style="min-height:290px">
+      <div class="flip-inner" id="flip-trend">
+        <!-- FRONT -->
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Win rate trend</div>
+              <div class="card-sub">Monthly · last 12 months</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="seg" id="trendSeg">
+                <button class="seg-btn active" onclick="switchTrend('wr',this)">Win rate</button>
+                <button class="seg-btn" onclick="switchTrend('vol',this)">Volume</button>
+                <button class="seg-btn" onclick="switchTrend('cyc',this)">Cycle</button>
+              </div>
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-trend',event)">?</button>
+                <div class="tooltip" id="tip-trend">
+                  <strong>Win rate</strong> — % of deals closed won out of all closed deals.<br><br>
+                  <strong>Volume</strong> — total number of deals closed (won + lost) per month.<br><br>
+                  <strong>Cycle</strong> — average days from opportunity creation to close for won deals.
+                </div>
+              </div>
+              <button class="icon-btn" title="View analysis" onclick="flipCard('flip-trend')">⇄</button>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:210px">
+            <canvas id="trendChart" role="img" aria-label="Win rate trend line chart">Win rate trend</canvas>
+          </div>
+        </div>
+        <!-- BACK -->
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Win rate — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-trend')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="8">Win rate climbed steadily from 55% in July to 64% by June — a 9pp improvement over 12 months. The most significant jumps occurred in Q4 (Oct→Dec) following the new enterprise sales playbook rollout, and again in Q2 as FinTech pipeline matured.
+
+Deal volume accelerated sharply in Q2, with June at 107 closed deals — 75% higher than the July baseline. This volume growth without a win rate drop signals genuine pipeline quality improvement, not just more activity.
+
+Average cycle time shortened from 51 days to 38 days — likely a combination of better qualification early in the funnel and faster security reviews enabled by the new compliance docs package.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donut card -->
+    <div class="flip-outer" style="min-height:290px">
+      <div class="flip-inner" id="flip-donut">
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Deal outcomes</div>
+              <div class="card-sub">847 total deals · Q2 2026</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-donut',event)">?</button>
+                <div class="tooltip" id="tip-donut">
+                  <strong>Won</strong> — opportunity marked Closed Won in Salesforce.<br><br>
+                  <strong>Lost</strong> — Closed Lost, regardless of reason.<br><br>
+                  <strong>No decision</strong> — prospect went silent or explicitly deferred purchase. Not a loss — potential re-engage opportunity.
+                </div>
+              </div>
+              <button class="icon-btn" onclick="flipCard('flip-donut')">⇄</button>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <div class="chart-wrap" style="height:170px;width:170px;flex-shrink:0">
+              <canvas id="donut" role="img" aria-label="Deal outcomes donut: 544 won, 224 lost, 79 no decision">Outcomes</canvas>
+            </div>
+            <div class="donut-stats">
+              <div><div class="donut-stat-val" style="color:var(--green)">544</div><div class="donut-stat-lbl">Won</div></div>
+              <div><div class="donut-stat-val" style="color:var(--red)">224</div><div class="donut-stat-lbl">Lost</div></div>
+              <div><div class="donut-stat-val" style="color:var(--amber)">79</div><div class="donut-stat-lbl">No decision</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Deal outcomes — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-donut')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="8">64.2% win rate represents a meaningful step forward — the team benchmark for this stage of growth is typically 55–65%, so we're at the top of the range.
+
+79 "no decision" deals (9% of total) represent a qualified re-engage pool. These prospects cleared budget and need stages but stalled. A targeted nurture sequence in Q3 could realistically recover 20–30 of these.
+
+Of the 224 losses, 55 (25%) were deals above $50K ACV — these are disproportionately impacting revenue. Enterprise win rate lags SMB by 11pp and should be the primary focus for Q3 coaching investment.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Industry + Loss reasons -->
+  <div class="two-col-even">
+
+    <div class="flip-outer" style="min-height:290px">
+      <div class="flip-inner" id="flip-industry">
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Win rate by industry</div>
+              <div class="card-sub">Ranked by deal volume · Salesforce</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-industry',event)">?</button>
+                <div class="tooltip" id="tip-industry">
+                  <strong>Industry</strong> is pulled from the Account Industry field in Salesforce.<br><br>
+                  Bar color encodes performance: <strong style="color:#86EFAC">green</strong> = above 60%, <strong style="color:#FCD34D">amber</strong> = 45–60%, <strong style="color:#FCA5A5">red</strong> = below 45%.<br><br>
+                  Segments with fewer than 20 deals are excluded to avoid small-sample noise.<br><br>
+                  <strong>Note:</strong> this view depends on the Industry field being kept clean and enriched in Salesforce. Accounts with a blank or "Other" Industry value are excluded from this chart.
+                </div>
+              </div>
+              <button class="icon-btn" onclick="flipCard('flip-industry')">⇄</button>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="industryChart" role="img" aria-label="Industry win rates horizontal bar chart">Industry win rates</canvas>
+          </div>
+        </div>
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Industry — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-industry')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="8">FinTech (82%) and Healthcare (76%) are clear ICP sweet spots — both have technical buyers (VP Eng, Head of Ops) who self-qualify quickly and value our compliance and API story.
+
+Gov/Public (34%) should be evaluated as a go/no-go market. Long procurement cycles, on-prem requirements, and an inability to reference other gov logos create a structural disadvantage that is unlikely to improve without dedicated resources.
+
+Manufacturing at 49% is a candidate for a focused vertical play — the 38 deals show sufficient volume, and the loss pattern (missing ERP integrations) is a solvable product gap vs a positioning problem.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-outer" style="min-height:290px">
+      <div class="flip-inner" id="flip-loss">
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Why deals are lost</div>
+              <div class="card-sub">AI-tagged · 303 closed-lost deals · Gong + Dialpad</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-loss',event)">?</button>
+                <div class="tooltip" id="tip-loss">
+                  Loss reasons are <strong>AI-extracted</strong> from Gong and Dialpad transcripts, then validated against the Salesforce Close Reason field.<br><br>
+                  <strong>Chose competitor</strong> — prospect explicitly mentioned switching to a named vendor.<br><br>
+                  <strong>No decision</strong> — budget freeze, reorg, or indefinite postponement.<br><br>
+                  <strong>Champion left</strong> — primary internal advocate departed before close.
+                </div>
+              </div>
+              <button class="icon-btn" onclick="flipCard('flip-loss')">⇄</button>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="lossChart" role="img" aria-label="Loss reasons bar chart">Loss reasons</canvas>
+          </div>
+        </div>
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Loss reasons — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-loss')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="8">Pricing (31%) is the most cited loss reason, but dig deeper: in 67% of pricing-loss calls, no ROI conversation occurred before the pricing objection was raised. This is a discovery and value-framing problem, not a pricing problem.
+
+Competitive losses (24%) — Vendor X is named in 38% of these. Their advantage is cited as native POS integration. This is a specific, addressable product gap worth evaluating for the Q4 roadmap.
+
+Champion loss (8%) drives outsized damage — these deals have a median ACV 2.1× higher than the average, meaning losing a champion disproportionately kills larger deals. Multi-threading (engaging 2+ stakeholders) should be required at Stage 3+.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2.5: Funnel + Pipeline attribution -->
+  <div class="two-col">
+
+    <!-- Funnel card -->
+    <div class="flip-outer" style="min-height:290px">
+      <div class="flip-inner" id="flip-funnel">
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Where deals die</div>
+              <div class="card-sub">Drop-off by stage · Salesforce</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-funnel',event)">?</button>
+                <div class="tooltip" id="tip-funnel">
+                  Each bar shows deals that <strong>entered</strong> a stage. The red segment shows how many of those were <strong>Closed Lost</strong> directly from that stage, before advancing.<br><br>
+                  Closed Lost is recorded at the stage the deal was in when the opportunity was marked lost in Salesforce.
+                </div>
+              </div>
+              <button class="icon-btn" title="View analysis" onclick="flipCard('flip-funnel')">⇄</button>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="funnelChart" role="img" aria-label="Funnel chart showing deals entering each stage and losses at each stage">Funnel by stage</canvas>
+          </div>
+        </div>
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Where deals die — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-funnel')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="8">Technical Validation is the single biggest drop-off point: 312 deals enter, 134 (43%) close lost directly from this stage. This is the largest loss concentration anywhere in the funnel.
+
+Negotiation has a smaller raw loss count (52) but the highest dollar impact — deals that reach Negotiation and still lose tend to be larger ACV, since smaller deals rarely survive to this stage in the first place.
+
+Discovery → Technical Validation conversion (847 → 312, 37%) is the steepest drop in the top of funnel. Combined with the Technical Validation loss rate, this suggests reps are advancing deals to technical eval before establishing a strong enough business case — worth testing a stricter exit criteria for Discovery.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline attribution card -->
+    <div class="flip-outer" style="min-height:290px">
+      <div class="flip-inner" id="flip-pipeline">
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Pipeline attribution</div>
+              <div class="card-sub">% of closed-won by source · Salesforce</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-pipeline',event)">?</button>
+                <div class="tooltip" id="tip-pipeline">
+                  <strong>Source</strong> is the Lead Source / Opportunity Source field set at creation in Salesforce.<br><br>
+                  <strong>Outbound</strong> includes SDR-sourced and AE self-sourced opportunities.<br><br>
+                  <strong>Partner</strong> includes referral and channel-sourced deals.
+                </div>
+              </div>
+              <button class="icon-btn" onclick="flipCard('flip-pipeline')">⇄</button>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="pipelineChart" role="img" aria-label="Donut chart of closed-won deals by pipeline source">Pipeline attribution</canvas>
+          </div>
+        </div>
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Pipeline attribution — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-pipeline')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="8">Inbound drives the largest share of closed-won (38%) and also closes fastest — these prospects arrive with a problem already identified, shortening discovery.
+
+Outbound is 34% of closed-won but represents the majority of total pipeline created, meaning outbound win rate is meaningfully lower than inbound. This is expected, but worth monitoring if the gap widens further.
+
+Partner-sourced deals are only 12% of volume but carry the highest average ACV and a 91% renewal rate — disproportionately valuable relative to their size. Expanding partner program investment could be a high-leverage Q3 move.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: Reps + Combos + Features -->
+  <div class="three-col">
+
+    <!-- Reps -->
+    <div class="flip-outer" style="min-height:340px">
+      <div class="flip-inner" id="flip-reps">
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Rep performance</div>
+              <div class="card-sub">Win rate · attainment · last 90d</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="seg" id="attainSeg">
+                <button class="seg-btn active" onclick="switchAttain('pct',this)">%</button>
+                <button class="seg-btn" onclick="switchAttain('dollar',this)">$</button>
+              </div>
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-reps',event)">?</button>
+                <div class="tooltip" id="tip-reps">
+                  <strong>Win %</strong> — closed won ÷ total closed deals.<br><br>
+                  <strong>Touchpoints</strong> — total logged activities (calls, emails, marketing touches, and other) across all deals in the period, pulled from Salesforce activity log + Gong + Dialpad + Marketo. Click a rep's touchpoint count for a channel breakdown.<br><br>
+                  Higher touchpoints with a low win rate can signal over-nurturing or poor qualification.
+                </div>
+              </div>
+              <button class="icon-btn" onclick="flipCard('flip-reps')">⇄</button>
+            </div>
+          </div>
+          <!-- rep rows -->
+          <div class="rep-row">
+            <div class="av" style="background:#EAF0CC;color:#4A5900">KL</div>
+            <div class="rep-info"><div class="rep-name">Kira Lam</div><div class="rep-sub">Enterprise · 84 deals</div></div>
+            <div class="rep-stats"><div class="rep-pct attain-val" style="color:var(--green)" data-pct="81%" data-dollar="$4.2M">81%</div><div class="rep-touches touches-link" onclick="openTouchModal('Kira Lam','Enterprise',1840)">1,840 touches</div></div>
+          </div>
+          <div class="rep-row">
+            <div class="av" style="background:#E0F2F5;color:#005A6B">MO</div>
+            <div class="rep-info"><div class="rep-name">Marcus Osei</div><div class="rep-sub">Mid-market · 112 deals</div></div>
+            <div class="rep-stats"><div class="rep-pct attain-val" style="color:var(--green)" data-pct="76%" data-dollar="$3.1M">76%</div><div class="rep-touches touches-link" onclick="openTouchModal('Marcus Osei','Mid-market',1456)">1,456 touches</div></div>
+          </div>
+          <div class="rep-row">
+            <div class="av" style="background:#EDE9FE;color:#730F1F">JP</div>
+            <div class="rep-info"><div class="rep-name">Jules Park</div><div class="rep-sub">Enterprise · 67 deals</div></div>
+            <div class="rep-stats"><div class="rep-pct attain-val" style="color:var(--green)" data-pct="71%" data-dollar="$3.8M">71%</div><div class="rep-touches touches-link" onclick="openTouchModal('Jules Park','Enterprise',1542)">1,542 touches</div></div>
+          </div>
+          <div class="rep-row">
+            <div class="av" style="background:#FDF1E6;color:#8A4A1F">SA</div>
+            <div class="rep-info"><div class="rep-name">Sofia Alves</div><div class="rep-sub">SMB · 153 deals</div></div>
+            <div class="rep-stats"><div class="rep-pct attain-val" style="color:var(--amber)" data-pct="55%" data-dollar="$1.4M">55%</div><div class="rep-touches touches-link" onclick="openTouchModal('Sofia Alves','SMB',918)">918 touches</div></div>
+          </div>
+          <div class="rep-row">
+            <div class="av" style="background:#FBE8EA;color:#730F1F">DK</div>
+            <div class="rep-info"><div class="rep-name">Derek Kim</div><div class="rep-sub">Mid-market · 98 deals</div></div>
+            <div class="rep-stats"><div class="rep-pct attain-val" style="color:var(--red)" data-pct="43%" data-dollar="$1.7M">43%</div><div class="rep-touches touches-link" onclick="openTouchModal('Derek Kim','Mid-market',1127)">1,127 touches</div></div>
+          </div>
+        </div>
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Rep performance — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-reps')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="10">Kira Lam closes 81% with 1,840 touches across 84 deals (~22 touches/deal) and a 31-day average TTC — the most efficient enterprise rep on the team. Her pattern: tight discovery in week 1, a live technical demo by week 2, then a structured close sequence. Replicate this playbook for other enterprise reps.
+
+Derek Kim's 1,127 touches across 98 deals at 43% win rate (~11.5 touches/deal) and a 49-day TTC is the clearest coaching signal — high effort, slow cycle, low outcome. Recommend reviewing his Stage 2→3 conversion specifically; deals are likely stalling on technical validation.
+
+Sofia Alves handles the highest deal volume (153 deals, 918 touches, ~6 touches/deal) at an SMB motion with a 27-day TTC. Her 55% win rate is reasonable for the segment, but the low touch ratio suggests some deals may be under-nurtured before they're marked lost.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Combos -->
+    <div class="flip-outer" style="min-height:340px">
+      <div class="flip-inner" id="flip-combo">
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Product combos → renewals</div>
+              <div class="card-sub">Renewal rate + CSAT by product line bundle</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-combo',event)">?</button>
+                <div class="tooltip" id="tip-combo">
+                  <strong>Renewal rate</strong> — % of accounts on this bundle that renewed at the 12-month mark.<br><br>
+                  <strong>CSAT</strong> — average post-renewal CSAT score (1–5 scale) from the CS survey.<br><br>
+                  Bundles require at least 50 accounts to appear. Combinations are determined by the active SKUs at the time of renewal.
+                </div>
+              </div>
+              <button class="icon-btn" onclick="flipCard('flip-combo')">⇄</button>
+            </div>
+          </div>
+          <div class="combo">
+            <div class="pills"><span class="pill">Recruiter</span><span class="pill">Jobs</span></div>
+            <div class="combo-right"><div class="combo-pct" style="color:var(--green)">94%</div><div class="combo-csat">CSAT 4.8 · 211</div></div>
+          </div>
+          <div class="combo">
+            <div class="pills"><span class="pill">Recruiter</span><span class="pill">Jobs</span><span class="pill">LinkedIn Learning</span></div>
+            <div class="combo-right"><div class="combo-pct" style="color:var(--green)">93%</div><div class="combo-csat">CSAT 4.7 · 142</div></div>
+          </div>
+          <div class="combo">
+            <div class="pills"><span class="pill">Jobs</span><span class="pill">LinkedIn Learning</span></div>
+            <div class="combo-right"><div class="combo-pct" style="color:var(--green)">88%</div><div class="combo-csat">CSAT 4.5 · 96</div></div>
+          </div>
+          <div class="combo">
+            <div class="pills"><span class="pill">Recruiter only</span></div>
+            <div class="combo-right"><div class="combo-pct" style="color:var(--amber)">79%</div><div class="combo-csat">CSAT 4.1 · 168</div></div>
+          </div>
+          <div class="combo">
+            <div class="pills"><span class="pill">Jobs only</span></div>
+            <div class="combo-right"><div class="combo-pct" style="color:var(--red)">61%</div><div class="combo-csat">CSAT 3.8 · 134</div></div>
+          </div>
+        </div>
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Product combos — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-combo')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="10">The 33pp renewal gap between the full Recruiter + Jobs bundle (94%) and Jobs-only accounts (61%) is the most actionable data point in this dashboard. Every Jobs-only account is both a churn risk and an upsell opportunity simultaneously.
+
+Adding LinkedIn Learning to Recruiter + Jobs holds renewal nearly flat (93% vs 94%) but lifts CSAT, suggesting Learning is a satisfaction driver more than a retention driver on its own — better positioned as a value-add than a standalone renewal lever.
+
+Recruiter-only accounts renew at 79%, notably higher than Jobs-only at 61%. This points to Jobs having a weaker standalone value story. Recommendation: build an "activation playbook" that gets Jobs-only accounts onto Recruiter within 90 days — historical cohorts that cross-grade this way reach 90%+ year-1 retention.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="flip-outer" style="min-height:340px">
+      <div class="flip-inner" id="flip-features">
+        <div class="card-face front">
+          <div class="card-hd">
+            <div class="card-hd-left">
+              <div class="card-title">Feature usage vs renewal</div>
+              <div class="card-sub">Adoption % vs renewal rate per feature</div>
+            </div>
+            <div class="card-hd-right">
+              <div class="info-wrap">
+                <button class="icon-btn" onclick="toggleTip('tip-features',event)">?</button>
+                <div class="tooltip" id="tip-features">
+                  <strong>Adoption %</strong> — share of active accounts that used this feature at least once in the last 30 days.<br><br>
+                  <strong>Renewal rate</strong> — 12-month renewal rate for accounts that actively use this feature.<br><br>
+                  A high renewal rate with lower adoption indicates a high-value underused feature — a CS outreach opportunity.
+                </div>
+              </div>
+              <button class="icon-btn" onclick="flipCard('flip-features')">⇄</button>
+            </div>
+          </div>
+          <div class="legend">
+            <span class="leg-item"><span class="leg-sq" style="background:#730F1F"></span>Adoption %</span>
+            <span class="leg-item"><span class="leg-sq" style="background:#718600"></span>Renewal rate</span>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="featureChart" role="img" aria-label="Grouped bars comparing feature adoption to renewal rate">Feature adoption vs renewal</canvas>
+          </div>
+        </div>
+        <div class="card-face back">
+          <div class="analysis-header">
+            <span class="analysis-title">Feature usage — analysis</span>
+            <button class="icon-btn" onclick="flipCard('flip-features')">⇄</button>
+          </div>
+          <textarea class="analysis-body" rows="10">Candidate Insights shows the widest gap: 68% adoption but 94% renewal for users who turn it on — meaning 32% of accounts don't use a feature strongly correlated with renewal. This is the highest-leverage CS outreach target.
+
+Smart Apply at 91% adoption + 96% renewal is the stickiest feature in the suite. Accounts that enable Smart Apply are effectively integrated into a candidate's daily workflow, creating switching costs that low-engagement accounts don't have.
+
+Talent Pool Sync at 61% adoption with 92% renewal suggests a setup-friction problem, not a value problem. A guided onboarding flow for Talent Pool Sync could move this from 61% to 80%+ adoption and lift overall renewal rate.</textarea>
+          <div class="divider"></div>
+          <div class="analysis-hint">✎ Click text to edit · changes are saved locally</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── Chart globals ──
+const G='#718600',R='#730F1F',A='#F2AD78',P='#730F1F',B='#008AA1',S='#A8A29E';
+const gc='rgba(0,0,0,0.04)',tc='#B0ADA9';
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
+
+// ── Trend chart ──
+const months=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+const tData={
+  wr: {d:[55,57,58,56,60,61,59,62,63,61,63,64], c:P, fmt:v=>v+'%'},
+  vol:{d:[61,58,72,68,75,80,71,88,92,84,98,107],c:B, fmt:v=>v},
+  cyc:{d:[51,50,49,52,48,47,46,44,43,42,40,38], c:A, fmt:v=>v+'d'}
+};
+const tChart=new Chart(document.getElementById('trendChart'),{
+  type:'line',
+  data:{labels:months,datasets:[{data:tData.wr.d,borderColor:P,backgroundColor:'rgba(109,79,216,0.07)',borderWidth:2,pointRadius:3,pointBackgroundColor:P,fill:true,tension:0.38}]},
+  options:{...base,scales:{
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
+    y:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>v+'%'},beginAtZero:false}
+  }}
+});
+function switchTrend(k,btn){
+  document.querySelectorAll('#trendSeg .seg-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const d=tData[k];
+  tChart.data.datasets[0].data=d.d;
+  tChart.data.datasets[0].borderColor=d.c;
+  tChart.data.datasets[0].backgroundColor=d.c+'18';
+  tChart.data.datasets[0].pointBackgroundColor=d.c;
+  tChart.options.scales.y.ticks.callback=d.fmt;
+  tChart.update();
+}
+
+// ── Donut ──
+new Chart(document.getElementById('donut'),{
+  type:'doughnut',
+  data:{labels:['Won','Lost','No decision'],datasets:[{data:[544,224,79],backgroundColor:[G,R,A],borderWidth:0,hoverOffset:4}]},
+  options:{...base,cutout:'70%'}
+});
+
+// ── Industry ──
+new Chart(document.getElementById('industryChart'),{
+  type:'bar',
+  data:{
+    labels:['FinTech','Healthcare','SaaS / B2B','E-commerce','Retail','Manufacturing','Gov / Public'],
+    datasets:[{data:[82,76,71,63,58,49,34],backgroundColor:[G,G,G,'#8AA300',A,A,R],borderRadius:4,borderSkipped:false}]
+  },
+  options:{...base,indexAxis:'y',scales:{
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>v+'%'},max:100},
+    y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}
+  }}
+});
+
+// ── Loss reasons ──
+new Chart(document.getElementById('lossChart'),{
+  type:'bar',
+  data:{
+    labels:['Pricing','Competitor','No decision','Features','Champion left','Other'],
+    datasets:[{data:[31,24,18,14,8,5],backgroundColor:[R,R,'#F2AD78',A,S,S],borderRadius:4,borderSkipped:false}]
+  },
+  options:{...base,indexAxis:'y',scales:{
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>v+'%'},max:40},
+    y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}
+  }}
+});
+
+// ── Feature chart ──
+new Chart(document.getElementById('featureChart'),{
+  type:'bar',
+  data:{
+    labels:['InMail','Smart Apply','Skills Match','Candidate Insights','Learning Paths','Talent Pool Sync'],
+    datasets:[
+      {label:'Adoption',data:[91,84,72,68,61,54],backgroundColor:P,borderRadius:3,borderSkipped:false},
+      {label:'Renewal', data:[96,93,90,94,92,87],backgroundColor:G,borderRadius:3,borderSkipped:false}
+    ]
+  },
+  options:{...base,scales:{
+    x:{grid:{display:false},ticks:{color:tc,font:{size:11}}},
+    y:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>v+'%'},max:110}
+  }}
+});
+
+// ── Flip cards ──
+function flipCard(id){
+  const inner=document.getElementById(id);
+  inner.classList.toggle('flipped');
+  // Resize charts after flip animation
+  setTimeout(()=>{ window.dispatchEvent(new Event('resize')); },520);
+}
+
+// ── Info tooltips ──
+let openTip=null;
+function toggleTip(id,e){
+  e.stopPropagation();
+  const el=document.getElementById(id);
+  if(openTip&&openTip!==el){openTip.classList.remove('visible');}
+  el.classList.toggle('visible');
+  openTip=el.classList.contains('visible')?el:null;
+}
+document.addEventListener('click',()=>{
+  if(openTip){openTip.classList.remove('visible');openTip=null;}
+});
+
+// ── Insight banner edit ──
+let insightEditing=false;
+function toggleInsightEdit(){
+  const display=document.getElementById('insightDisplay');
+  const btn=document.getElementById('insightEditBtn');
+  if(!insightEditing){
+    const text=display.innerText;
+    display.innerHTML=`<textarea class="insight-textarea" id="insightTA" rows="3">${text}</textarea>`;
+    document.getElementById('insightTA').focus();
+    btn.textContent='✓ Done';
+    insightEditing=true;
+  } else {
+    const ta=document.getElementById('insightTA');
+    display.innerHTML=ta.value.replace(/\n/g,'<br>');
+    btn.textContent='✎ Edit';
+    insightEditing=false;
+  }
+}
+// ── Funnel chart (stacked: advanced vs closed-lost-at-stage) ──
+new Chart(document.getElementById('funnelChart'),{
+  type:'bar',
+  data:{
+    labels:['Discovery','Tech. Validation','Negotiation','Closed Won'],
+    datasets:[
+      {label:'Advanced / Won', data:[713,178,142,544], backgroundColor:G, borderRadius:4, borderSkipped:false, stack:'s'},
+      {label:'Closed Lost here', data:[134,134,52,0], backgroundColor:R, borderRadius:4, borderSkipped:false, stack:'s'}
+    ]
+  },
+  options:{...base,indexAxis:'y',scales:{
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:11}},stacked:true},
+    y:{grid:{display:false},ticks:{color:tc,font:{size:11}},stacked:true}
+  }}
+});
+
+// ── Pipeline attribution donut ──
+new Chart(document.getElementById('pipelineChart'),{
+  type:'doughnut',
+  data:{labels:['Inbound','Outbound','Partner','Other'],datasets:[{data:[38,34,12,16],backgroundColor:[P,B,G,A],borderWidth:0,hoverOffset:4}]},
+  options:{...base,cutout:'65%',plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:9,font:{size:11},color:tc}}}}
+});
+
+// ── Touchpoint breakdown modal ──
+const touchMix={
+  'Kira Lam':     {Email:540, Call:410, 'On-site meeting':380, 'Marketing touch':320, Other:190},
+  'Marcus Osei':  {Email:480, Call:300, 'On-site meeting':260, 'Marketing touch':280, Other:136},
+  'Jules Park':   {Email:500, Call:340, 'On-site meeting':290, 'Marketing touch':270, Other:142},
+  'Sofia Alves':  {Email:380, Call:140, 'On-site meeting':90,  'Marketing touch':220, Other:88},
+  'Derek Kim':    {Email:430, Call:180, 'On-site meeting':130, 'Marketing touch':260, Other:127}
+};
+const touchColors={Email:P, Call:B, 'On-site meeting':G, 'Marketing touch':A, Other:S};
+
+function openTouchModal(name, segment, total){
+  document.getElementById('touchModalTitle').textContent=name+' — touchpoints';
+  document.getElementById('touchModalSub').textContent=segment+' · '+total.toLocaleString()+' total · last 90d';
+  const mix=touchMix[name]||{};
+  const max=Math.max(...Object.values(mix));
+  const body=document.getElementById('touchModalBody');
+  body.innerHTML=Object.entries(mix).map(([k,v])=>`
+    <div class="touch-row">
+      <div class="touch-lbl">${k}</div>
+      <div class="touch-bar-wrap"><div class="touch-bar" style="width:${(v/max*100).toFixed(0)}%;background:${touchColors[k]}"></div></div>
+      <div class="touch-val">${v}</div>
+    </div>`).join('');
+  document.getElementById('touchModal').classList.add('visible');
+}
+function closeTouchModal(){
+  document.getElementById('touchModal').classList.remove('visible');
+}
+
+// ── Attainment % / $ toggle ──
+function switchAttain(mode,btn){
+  document.querySelectorAll('#attainSeg .seg-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.attain-val').forEach(el=>{
+    el.textContent = mode==='pct' ? el.dataset.pct : el.dataset.dollar;
+  });
+}
+</script>
+</body>
+</html>
