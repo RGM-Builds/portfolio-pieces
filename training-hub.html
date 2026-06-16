@@ -1,0 +1,2823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alameda County Shelter Standards — Training Hub</title>
+<style>
+  :root{
+    --ink:#1c2521;
+    --ink-soft:#4a564f;
+    --paper:#f7f5ef;
+    --paper-raised:#ffffff;
+    --line:#d8d3c4;
+    --moss:#3d5c45;
+    --moss-deep:#27402c;
+    --moss-pale:#e4ebe1;
+    --rust:#b5562f;
+    --rust-pale:#f5e1d6;
+    --gold:#b3892f;
+    --gold-pale:#f3e8cf;
+    --slate:#3a5066;
+    --slate-pale:#e1e8ee;
+    --berry:#8a3450;
+    --berry-pale:#f1dde4;
+    --ok:#3d6b3f;
+    --ok-pale:#e3eee0;
+    --bad:#a23b2e;
+    --bad-pale:#f6e0db;
+    --radius:10px;
+    --radius-lg:16px;
+    --serif: "Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+    --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono: "SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    min-height:100vh;
+  }
+  #app{max-width:920px;margin:0 auto;padding:0 20px 80px;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    padding:18px 0 14px;
+    margin-bottom:8px;
+  }
+  .topbar-inner{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:baseline;gap:10px;cursor:pointer;}
+  .brand .mark{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:22px;
+    color:var(--moss-deep);
+    letter-spacing:0.5px;
+  }
+  .brand .tag{font-size:12px;color:var(--ink-soft);letter-spacing:0.06em;text-transform:uppercase;}
+  .topbar-right{display:flex;align-items:center;gap:10px;}
+  .who{font-size:13px;color:var(--ink-soft);}
+  .who b{color:var(--ink);font-weight:600;}
+  .btn-link{
+    background:none;border:none;color:var(--moss-deep);font-size:13px;font-weight:600;
+    cursor:pointer;padding:6px 10px;border-radius:6px;text-decoration:underline;
+  }
+  .btn-link:hover{background:var(--moss-pale);}
+
+  /* ---------- generic buttons ---------- */
+  button{font-family:var(--sans);}
+  .btn{
+    appearance:none;border:1px solid var(--line);background:var(--paper-raised);
+    color:var(--ink);padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;
+    cursor:pointer;transition:transform .08s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:hover{background:var(--moss-pale);border-color:var(--moss);}
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-primary{background:var(--moss-deep);color:#fff;border-color:var(--moss-deep);}
+  .btn-primary:hover{background:var(--moss);border-color:var(--moss);}
+  .btn-ghost{background:transparent;border-color:transparent;}
+  .btn-ghost:hover{background:var(--moss-pale);}
+  .btn-sm{padding:6px 12px;font-size:13px;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+
+  /* ---------- screens ---------- */
+  .screen{animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- gate / login ---------- */
+  .gate-wrap{
+    min-height:80vh;display:flex;align-items:center;justify-content:center;
+  }
+  .gate-card{
+    max-width:440px;width:100%;background:var(--paper-raised);
+    border:1px solid var(--line);border-radius:var(--radius-lg);
+    padding:36px 32px;text-align:left;
+  }
+  .gate-card h1{
+    font-family:var(--serif);font-size:26px;margin:0 0 6px;color:var(--moss-deep);
+  }
+  .gate-card p.sub{color:var(--ink-soft);font-size:14px;margin:0 0 26px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;letter-spacing:.03em;text-transform:uppercase;}
+  .field input, .field select{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;
+    font-size:15px;background:#fff;color:var(--ink);
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--moss);outline-offset:1px;}
+  .role-toggle{display:flex;gap:8px;margin-bottom:18px;}
+  .role-btn{
+    flex:1;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff;
+    cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-soft);text-align:center;
+  }
+  .role-btn.active{background:var(--moss-deep);color:#fff;border-color:var(--moss-deep);}
+  .gate-error{color:var(--bad);font-size:13px;margin-top:10px;display:none;}
+
+  /* ---------- hub ---------- */
+  .hub-hero{
+    padding:22px 0 6px;
+  }
+  .hub-hero h1{
+    font-family:var(--serif);font-size:30px;margin:0 0 8px;color:var(--moss-deep);
+  }
+  .hub-hero p{color:var(--ink-soft);font-size:15px;max-width:600px;margin:0;}
+
+  .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 30px;}
+  .stat-card{
+    background:var(--paper-raised);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  .stat-card .n{font-family:var(--serif);font-size:24px;color:var(--moss-deep);font-weight:700;}
+  .stat-card .l{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+
+  .section-label{
+    font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--ink-soft);margin:30px 0 14px;display:flex;align-items:center;gap:10px;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  .module-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:640px){.module-grid{grid-template-columns:1fr;} .stat-strip{grid-template-columns:repeat(2,1fr);}}
+
+  .mod-card{
+    background:var(--paper-raised);border:1px solid var(--line);border-radius:var(--radius-lg);
+    padding:18px 18px 16px;cursor:pointer;position:relative;overflow:hidden;
+    transition:border-color .15s ease, transform .1s ease;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .mod-card:hover{border-color:var(--moss);transform:translateY(-1px);}
+  .mod-card .bar{position:absolute;left:0;top:0;bottom:0;width:5px;}
+  .mod-card .num{font-family:var(--serif);font-size:13px;color:var(--ink-soft);font-weight:700;}
+  .mod-card h3{margin:0;font-size:16.5px;font-weight:700;color:var(--ink);line-height:1.3;}
+  .mod-card .desc{font-size:13px;color:var(--ink-soft);line-height:1.45;}
+  .mod-card .meta-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+  .pill{
+    font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px;letter-spacing:.02em;
+  }
+  .pill-done{background:var(--ok-pale);color:var(--ok);}
+  .pill-progress{background:var(--gold-pale);color:var(--gold);}
+  .pill-new{background:var(--slate-pale);color:var(--slate);}
+  .pill-locked{background:#eceae2;color:#9b9684;}
+  .score-chip{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .score-chip.pass{color:var(--ok);}
+  .score-chip.fail{color:var(--bad);}
+
+  /* progress bar */
+  .pbar{height:5px;background:var(--moss-pale);border-radius:99px;overflow:hidden;margin-top:6px;}
+  .pbar > div{height:100%;background:var(--moss);border-radius:99px;transition:width .3s ease;}
+
+  /* ---------- module detail / lesson viewer ---------- */
+  .crumbs{font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+  .crumbs button{background:none;border:none;color:var(--moss-deep);font-weight:600;cursor:pointer;font-size:13px;text-decoration:underline;padding:0;}
+
+  .mod-header{margin-bottom:24px;}
+  .mod-header .eyebrow{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+  .mod-header h1{font-family:var(--serif);font-size:28px;margin:6px 0 8px;color:var(--moss-deep);}
+  .mod-header p{color:var(--ink-soft);font-size:15px;max-width:640px;}
+
+  .lesson-list{display:flex;flex-direction:column;gap:10px;margin:20px 0;}
+  .lesson-row{
+    display:flex;align-items:center;gap:14px;background:var(--paper-raised);
+    border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;
+    cursor:pointer;transition:border-color .15s;
+  }
+  .lesson-row:hover{border-color:var(--moss);}
+  .lesson-row .check{
+    width:26px;height:26px;border-radius:50%;border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:transparent;
+  }
+  .lesson-row.done .check{background:var(--moss);border-color:var(--moss);color:#fff;}
+  .lesson-row .ltext{flex:1;}
+  .lesson-row .ltitle{font-weight:600;font-size:14.5px;}
+  .lesson-row .lsub{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .lesson-row .arrow{color:var(--ink-soft);font-size:16px;}
+
+  .quiz-cta{
+    margin-top:24px;background:var(--moss-pale);border:1px solid var(--moss);border-radius:var(--radius-lg);
+    padding:20px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  .quiz-cta .qtext h3{margin:0 0 4px;font-size:16px;color:var(--moss-deep);}
+  .quiz-cta .qtext p{margin:0;font-size:13px;color:var(--ink-soft);}
+
+  /* ---------- lesson content screen ---------- */
+  .lesson-progress-bar{height:4px;background:var(--moss-pale);border-radius:99px;margin-bottom:24px;overflow:hidden;}
+  .lesson-progress-bar > div{height:100%;background:var(--moss);transition:width .3s ease;}
+  .lesson-card{
+    background:var(--paper-raised);border:1px solid var(--line);border-radius:var(--radius-lg);
+    padding:30px 32px;min-height:280px;
+  }
+  .lesson-card .ltag{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--moss);}
+  .lesson-card h2{font-family:var(--serif);font-size:23px;margin:8px 0 16px;color:var(--ink);}
+  .lesson-card .body{font-size:15.5px;line-height:1.7;color:var(--ink);}
+  .lesson-card .body p{margin:0 0 14px;}
+  .lesson-card .body ul, .lesson-card .body ol{margin:0 0 14px;padding-left:22px;}
+  .lesson-card .body li{margin-bottom:6px;}
+  .lesson-card .body strong{color:var(--moss-deep);}
+  .callout{
+    border-left:3px solid var(--gold);background:var(--gold-pale);padding:12px 16px;
+    border-radius:0 8px 8px 0;font-size:14px;margin:16px 0;color:#5c4717;
+  }
+  .callout.scenario{border-left-color:var(--slate);background:var(--slate-pale);color:#1e2f3f;}
+  .callout.warn{border-left-color:var(--rust);background:var(--rust-pale);color:#6b2c14;}
+  .callout b{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;opacity:.85;}
+
+  .check-interaction{
+    margin-top:20px;border-top:1px dashed var(--line);padding-top:18px;
+  }
+  .check-q{font-weight:600;font-size:14.5px;margin-bottom:10px;}
+  .opt-list{display:flex;flex-direction:column;gap:8px;}
+  .opt-btn{
+    text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;
+    padding:11px 14px;font-size:14px;cursor:pointer;color:var(--ink);
+  }
+  .opt-btn:hover{border-color:var(--moss);}
+  .opt-btn.correct{background:var(--ok-pale);border-color:var(--ok);color:#244a26;}
+  .opt-btn.incorrect{background:var(--bad-pale);border-color:var(--bad);color:#6e2419;}
+  .opt-btn.dim{opacity:.55;}
+  .feedback-note{font-size:13.5px;margin-top:10px;padding:10px 12px;border-radius:8px;}
+  .feedback-note.good{background:var(--ok-pale);color:#244a26;}
+  .feedback-note.bad{background:var(--bad-pale);color:#6e2419;}
+
+  .lesson-nav{display:flex;justify-content:space-between;margin-top:22px;}
+
+  /* ---------- quiz ---------- */
+  .quiz-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .quiz-head h2{font-family:var(--serif);font-size:22px;margin:0;color:var(--moss-deep);}
+  .quiz-counter{font-size:13px;color:var(--ink-soft);font-weight:600;}
+  .quiz-progress{height:5px;background:var(--moss-pale);border-radius:99px;margin-bottom:26px;overflow:hidden;}
+  .quiz-progress > div{height:100%;background:var(--moss);transition:width .3s ease;}
+
+  .quiz-card{background:var(--paper-raised);border:1px solid var(--line);border-radius:var(--radius-lg);padding:30px 32px;}
+  .quiz-card .qkind{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--berry);margin-bottom:8px;}
+  .quiz-card .qprompt{font-size:17px;font-weight:600;line-height:1.5;margin-bottom:20px;}
+  .quiz-card .qscenario{font-size:14px;color:var(--ink-soft);background:var(--paper);border-radius:8px;padding:12px 14px;margin-bottom:16px;line-height:1.6;}
+
+  .quiz-opts{display:flex;flex-direction:column;gap:10px;}
+  .quiz-opt{
+    display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--line);border-radius:10px;
+    padding:13px 15px;cursor:pointer;background:#fff;transition:border-color .12s, background .12s;
+  }
+  .quiz-opt:hover{border-color:var(--moss);}
+  .quiz-opt .letter{
+    width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;
+    flex-shrink:0;color:var(--ink-soft);
+  }
+  .quiz-opt .otext{font-size:14.5px;line-height:1.5;padding-top:1px;}
+  .quiz-opt.selected{border-color:var(--moss);background:var(--moss-pale);}
+  .quiz-opt.selected .letter{background:var(--moss);border-color:var(--moss);color:#fff;}
+  .quiz-opt.reveal-correct{border-color:var(--ok);background:var(--ok-pale);}
+  .quiz-opt.reveal-correct .letter{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .quiz-opt.reveal-incorrect{border-color:var(--bad);background:var(--bad-pale);}
+  .quiz-opt.reveal-incorrect .letter{background:var(--bad);border-color:var(--bad);color:#fff;}
+
+  .quiz-explain{
+    margin-top:18px;padding:14px 16px;border-radius:10px;font-size:14px;line-height:1.6;
+  }
+  .quiz-explain.good{background:var(--ok-pale);color:#1f3f21;}
+  .quiz-explain.bad{background:var(--bad-pale);color:#5c1f15;}
+  .quiz-explain .qe-label{font-weight:700;display:block;margin-bottom:4px;}
+  .quiz-explain .qe-cite{font-size:12.5px;opacity:.8;margin-top:6px;font-style:italic;}
+
+  .quiz-footer{display:flex;justify-content:flex-end;margin-top:24px;}
+
+  /* ---------- results ---------- */
+  .result-wrap{text-align:center;padding:30px 0;}
+  .result-ring{
+    width:140px;height:140px;border-radius:50%;margin:0 auto 20px;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    border:8px solid var(--moss-pale);position:relative;
+  }
+  .result-ring .pct{font-family:var(--serif);font-size:34px;font-weight:700;color:var(--moss-deep);}
+  .result-ring .of{font-size:12px;color:var(--ink-soft);}
+  .result-ring.pass{border-color:var(--ok);}
+  .result-ring.fail{border-color:var(--bad);}
+  .result-title{font-family:var(--serif);font-size:24px;margin:0 0 8px;}
+  .result-sub{color:var(--ink-soft);font-size:14.5px;max-width:440px;margin:0 auto 24px;}
+  .miss-list{text-align:left;max-width:560px;margin:0 auto 20px;background:var(--paper-raised);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;}
+  .miss-list h4{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);}
+  .miss-item{font-size:14px;padding:8px 0;border-top:1px solid var(--line);}
+  .miss-item:first-of-type{border-top:none;}
+
+  /* ---------- remediation ---------- */
+  .remed-card{background:var(--gold-pale);border:1px solid var(--gold);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:20px;}
+  .remed-card .rtag{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#7a5b1f;}
+  .remed-card h2{font-family:var(--serif);font-size:21px;margin:6px 0 12px;color:#5c4717;}
+  .remed-card .rbody{font-size:14.5px;line-height:1.65;color:#4a3a12;}
+  .remed-card .rbody p{margin:0 0 12px;}
+  .remed-card .rbody strong{color:#3a2c0a;}
+
+  /* ---------- moderator dashboard ---------- */
+  .mod-dash-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .mod-dash-table th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--ink-soft);padding:8px 10px;border-bottom:2px solid var(--line);
+  }
+  .mod-dash-table td{padding:9px 10px;border-bottom:1px solid var(--line);}
+  .mod-dash-table tr:hover td{background:var(--paper);}
+  .score-badge{font-weight:700;padding:3px 9px;border-radius:99px;font-size:12px;}
+  .score-badge.pass{background:var(--ok-pale);color:var(--ok);}
+  .score-badge.fail{background:var(--bad-pale);color:var(--bad);}
+
+  .empty-state{
+    text-align:center;padding:50px 20px;color:var(--ink-soft);font-size:14px;
+  }
+
+  .filter-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .chip-filter{
+    border:1px solid var(--line);background:#fff;padding:6px 13px;border-radius:99px;
+    font-size:12.5px;font-weight:600;cursor:pointer;color:var(--ink-soft);
+  }
+  .chip-filter.active{background:var(--moss-deep);color:#fff;border-color:var(--moss-deep);}
+
+  ::selection{background:var(--moss-pale);}
+
+  @media print{ .topbar, .btn-row { display:none; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ============================================================
+// Alameda County Shelter Standards — Training Hub content data
+// Source: Shelter_Standards_June_2_for_Review.pdf
+// Required trainings per Section G.6 (pages 47-48)
+// ============================================================
+
+const MODULES = [
+
+// ======================================================================
+// MODULE 1 — CONFIDENTIALITY PROTOCOLS
+// ======================================================================
+{
+  id: "confidentiality",
+  order: 1,
+  color: "moss",
+  dueWindow: "30 days",
+  title: "Confidentiality protocols",
+  short: "Protecting participant privacy in records, conversations, and disclosures.",
+  description: "Participants arrive at shelter in crisis, often having lost control over their own information. This module covers how to keep records secure, what you can say and to whom, and how to respond when someone comes looking for a participant.",
+  sourceRef: "Section A.10, A.7(h), A.1.3(c)",
+  lessons: [
+    {
+      id: "c1",
+      title: "Why confidentiality is a right, not a courtesy",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>Confidentiality at a shelter isn't an administrative nicety — it's a stated <strong>participant right</strong>. The standards guarantee that every participant will have their personal information treated with confidentiality, will be told when and to whom confidential information will be disclosed, and can deny disclosure unless the law requires it.</p>
+        <p>For many participants, a shelter is the safest place they've been in weeks. That safety depends on staff being predictable and disciplined about who learns what. A single careless comment in a hallway — "didn't I see you at the DV shelter last month?" — can undo months of a participant's effort to stay hidden from someone dangerous.</p>
+        <div class="callout"><b>Standard in plain terms</b>Participants control their own story. Staff are the gatekeepers, not the narrators.</div>
+      `,
+      check: {
+        q: "A participant's family member calls and says they're worried and just want to know if their relative is okay. What's the correct response?",
+        options: [
+          "Confirm the person is safely staying at the shelter to ease the family's mind",
+          "Take a message without confirming or denying the participant is there, and pass it along per shelter procedure",
+          "Tell the caller to try a different shelter"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. The standards require shelters to take messages without confirming or denying presence, then inform the participant of the contact attempt — protecting their right to decide if and when to reconnect.",
+          incorrect: "Confirming presence — even with good intentions — can put a participant at risk if the caller isn't who they claim to be. The standard requires neither confirming nor denying."
+        }
+      }
+    },
+    {
+      id: "c2",
+      title: "Records, screens, and locked doors",
+      minutes: 4,
+      tag: "Practice",
+      body: `
+        <p>Confidentiality lives in physical habits as much as policy language. Participant files must be kept in a secure, locked location. Electronic files must be password-protected and accessed so that others can't view the screen over your shoulder.</p>
+        <ul>
+          <li>Step away from a computer? Lock the screen.</li>
+          <li>Pulling a paper file? Return it to the locked cabinet — don't leave it on a desk during a shift change.</li>
+          <li>Discussing a participant's situation with a colleague? Do it somewhere participants and visitors can't overhear.</li>
+        </ul>
+        <p>Before any personal information goes to an outside party — a landlord, a family member, another agency — the participant signs a <strong>Release of Information (ROI)</strong>. The ROI is part of the Program Agreement packet reviewed at intake, so participants understand from day one what disclosure looks like and that they control it.</p>
+      `,
+      check: {
+        q: "A case manager wants to email a participant's housing application to a landlord. What must happen first?",
+        options: [
+          "Nothing — sharing information to help someone get housed is always allowed",
+          "The participant must sign a Release of Information (ROI) authorizing that specific disclosure",
+          "The case manager just needs verbal permission from their supervisor"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. A signed ROI is the mechanism that turns a participant's right to confidentiality into a deliberate, informed choice to share specific information with a specific party.",
+          incorrect: "Even disclosures made with good intentions require the participant's signed authorization first. A supervisor's permission doesn't substitute for the participant's own consent."
+        }
+      }
+    },
+    {
+      id: "c3",
+      title: "Pseudonyms and verbal discretion",
+      minutes: 3,
+      tag: "Safety",
+      body: `
+        <p>Some participants — survivors of gender-based violence, people fleeing a trafficking situation, people estranged from someone dangerous — need to be invisible by name. The standards allow any participant to use a <strong>pseudonym</strong> within the shelter when they feel their safety is at risk, no special justification required beyond their own assessment.</p>
+        <div class="callout scenario"><b>Scenario</b>A participant who goes by "Maria S." in your system is paged over a walkie-talkie by her legal first name because a new staff member didn't check the file. If anyone with reason to find her was nearby, that single page could have located her.</div>
+        <p>Verbal communication is often the weakest link in confidentiality — not because staff are careless on purpose, but because hallway conversations, intercom pages, and check-in desks are public by nature. The standard requires verbal communication of confidential information to be conducted in a way that avoids unintended disclosure: lower your voice, step into a private space, check the file before you page a name.</p>
+      `,
+      check: {
+        q: "Why does the standard allow participants to use a pseudonym, no questions asked?",
+        options: [
+          "It reduces the shelter's paperwork burden",
+          "It lets the participant — who knows their own risk best — control whether their real identity is exposed inside the shelter",
+          "It's only for participants without identification documents"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Exactly. Safety assessments belong to the person living the risk. The standard doesn't require proof of danger before honoring a pseudonym request.",
+          incorrect: "Pseudonym use isn't about paperwork or documentation status — it's a safety tool that participants can invoke based on their own judgment."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "cq1",
+        prompt: "A participant's abusive ex-partner shows up at the front desk asking if she's staying there. What does the standard require?",
+        options: [
+          "Tell him she isn't there, since lying protects her safety",
+          "Confirm she's there but ask him to leave",
+          "Neither confirm nor deny her presence, and later inform her that someone tried to contact her",
+          "Call the participant to the desk so she can decide what to tell him herself"
+        ],
+        correctIndex: 2,
+        explain: "The standard requires shelters to neither confirm nor deny a participant's presence when someone requests to visit, contact, or leave a message — and to inform the participant afterward of the attempt to reach them. This keeps control with the participant without putting staff in the position of lying or confirming a location.",
+        cite: "Section A.10.6"
+      },
+      {
+        id: "cq2",
+        prompt: "Which of these is required to be in the Program Agreement participants review at intake?",
+        options: [
+          "The shelter's annual operating budget",
+          "Privacy and confidentiality practices, including HIPAA when applicable",
+          "Staff performance reviews",
+          "The names of other participants currently staying at the shelter"
+        ],
+        correctIndex: 1,
+        explain: "Program Agreements must include privacy and confidentiality practices so participants understand, from their very first day, how their information will and won't be used.",
+        cite: "Section A.1.3(c)"
+      },
+      {
+        id: "cq3",
+        prompt: "A new staff member asks a participant detailed medical history questions during intake, beyond what HMIS requires. Is this allowed?",
+        options: [
+          "Yes, more information always helps staff serve participants better",
+          "No — additional medical questions at intake are restricted unless the shelter provides medically enhanced services or the participant shows symptoms of a communicable disease",
+          "Yes, as long as the participant volunteers the information",
+          "No, medical questions can never be asked at any point in a shelter stay"
+        ],
+        correctIndex: 1,
+        explain: "To protect participant privacy, intake is limited to specific required data points. Broader medical questioning is reserved for medically enhanced shelters or situations involving possible communicable disease — and can be asked later during HMIS enrollment.",
+        cite: "Section A.3.9, A.3.10"
+      },
+      {
+        id: "cq4",
+        prompt: "Where should a participant's paper case file live when not actively in use?",
+        options: [
+          "On the case manager's desk for easy access",
+          "In a secure, locked location",
+          "In a shared staff binder near the front desk",
+          "Wherever is convenient, as long as it's labeled"
+        ],
+        correctIndex: 1,
+        explain: "Participant files must be kept confidential and stored in a secure, locked location — paper or electronic.",
+        cite: "Section A.10.2"
+      },
+      {
+        id: "cq5",
+        prompt: "A participant tells you she wants to be called 'Jay' instead of her legal name while she's at the shelter, because she's worried someone from her past might find her. What's the correct staff response?",
+        options: [
+          "Ask her to explain the specific threat before agreeing",
+          "Honor the pseudonym and update how staff refer to her accordingly",
+          "Tell her pseudonyms are only allowed for legal name changes",
+          "Use her legal name on official forms but never out loud"
+        ],
+        correctIndex: 1,
+        explain: "Participants may use pseudonyms within the shelter to protect their identity whenever they feel their safety is at risk — the standard doesn't require staff to interrogate or verify the threat first.",
+        cite: "Section A.10.7"
+      }
+    ]
+  },
+  remediation: {
+    intro: "Confidentiality misses usually cluster around one idea: information about a participant belongs to the participant, and every disclosure — verbal, written, or electronic — needs their authorization or a legal mandate.",
+    points: [
+      { tag: "Presence requests", text: "Never confirm or deny a participant is at the shelter when someone else asks. Take a message, then tell the participant afterward that someone tried to reach them." },
+      { tag: "Sharing data outward", text: "Any disclosure to an outside party — landlord, family, another agency — requires a signed Release of Information first." },
+      { tag: "Intake scope", text: "Stick to the required intake data points unless your shelter is medically enhanced or the participant shows symptoms of a communicable disease." },
+      { tag: "Physical security", text: "Locked cabinets for paper files, password-protected and screen-shielded systems for electronic files." },
+      { tag: "Pseudonyms", text: "Granted on request, without requiring proof or explanation of the underlying risk." }
+    ]
+  }
+},
+
+// ======================================================================
+// MODULE 2 — CRISIS PREVENTION & VERBAL DE-ESCALATION
+// ======================================================================
+{
+  id: "deescalation",
+  order: 2,
+  color: "rust",
+  dueWindow: "30 days",
+  title: "Crisis prevention & verbal de-escalation",
+  short: "Trauma-informed responses to conflict, distress, and challenging behavior.",
+  description: "Most participants arrive at shelter while in crisis. This module covers the trauma-informed posture behind every interaction, and the progressive, fair process staff use before any disciplinary action — de-escalation is a system, not an instinct.",
+  sourceRef: "Section A.19, A.21, G.1.1, A.3.2",
+  lessons: [
+    {
+      id: "d1",
+      title: "Trauma-informed starts at the door",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>Intake must be welcoming and trauma-informed, recognizing that many participants are arriving in crisis. That single sentence in the standards reframes every interaction that follows: a participant who seems short-tempered, suspicious, or shut down at hour one of their stay isn't being difficult — they may be running on adrenaline from whatever brought them to your door.</p>
+        <p>Staff are expected to treat participants with dignity and respect from a trauma-informed perspective that is professional and avoids favoritism. That word — <strong>professional</strong> — matters as much as "trauma-informed." De-escalation isn't about being permissive; it's about staying calm, consistent, and predictable so a participant in crisis has something steady to orient around.</p>
+        <div class="callout"><b>Core idea</b>Trauma-informed care assumes distress is often a symptom of past harm, not a character flaw — and responds accordingly.</div>
+      `,
+      check: {
+        q: "A participant snaps at a staff member during check-in, raising her voice over a bed assignment. What does a trauma-informed first response look like?",
+        options: [
+          "Match her tone to show you won't be pushed around",
+          "Stay calm, lower your own volume, and try to understand what's underneath the reaction before responding to the words",
+          "Tell her to calm down or she'll be asked to leave"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. A steady, curious response — rather than escalation or immediate threats — is the foundation of trauma-informed de-escalation.",
+          incorrect: "Matching intensity or jumping to consequences tends to escalate, not de-escalate. The standard calls for a professional, dignity-first posture even in tense moments."
+        }
+      }
+    },
+    {
+      id: "d2",
+      title: "Warning before discharge: the progressive response system",
+      minutes: 5,
+      tag: "Process",
+      body: `
+        <p>De-escalation isn't just a tone of voice — it's a structured process the standards require before anyone faces serious consequences. Shelters must use a <strong>progressive response system</strong> that includes warnings, reminders, and direct support, documented in writing, before a participant can be discharged for noncompliance.</p>
+        <p>That system has teeth on the participant's side too. After any identified noncompliance, staff must meet with the participant within <strong>three days</strong> to discuss the concern and identify ways to correct it — not silently build a case file toward discharge.</p>
+        <ul>
+          <li>Warnings and support, documented in writing</li>
+          <li>A meeting within 3 days of noncompliance being identified</li>
+          <li>For repeated issues, a corrective action plan built jointly with the participant</li>
+          <li>Everything logged in HMIS and case notes</li>
+        </ul>
+        <p>This process exists because the standards explicitly guarantee participants the right to receive warnings and an opportunity to correct behavior before being discharged for noncompliance — except for the narrow set of incidents that count as immediate grounds for discharge.</p>
+      `,
+      check: {
+        q: "A participant has been late to chores three times this month. What must happen before this becomes a discharge issue?",
+        options: [
+          "Nothing — three strikes means automatic discharge",
+          "A documented progressive response: warnings, a meeting within 3 days of the issue being flagged, and possibly a corrective action plan",
+          "The participant should be discharged immediately since rules are rules"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct — and notably, chore noncompliance alone can never be grounds for discharge under the standards, only a pattern combined with a documented corrective action process.",
+          incorrect: "Discharge is the last step, not the first. The standard requires documented warnings, a timely meeting, and support before any serious consequence — and chore noncompliance specifically can't be a discharge reason on its own."
+        }
+      }
+    },
+    {
+      id: "d3",
+      title: "When de-escalation isn't enough: immediate danger",
+      minutes: 4,
+      tag: "Boundaries",
+      body: `
+        <p>De-escalation has a floor. The standards recognize that some behavior — weapons possession, violent assault, an active threat to others' safety — bypasses the progressive warning process because waiting isn't safe. The standards distinguish clearly between behavior that calls for patient engagement and behavior that calls for immediate protective action.</p>
+        <div class="callout warn"><b>Where the line sits</b>Unless behavior poses an immediate danger to participants or staff, corrective action plans come first. Immediate danger changes the calculus — but even then, discharge decisions still require supervisor approval, generally can't happen at night unless there's an active threat, and participants still get a copy of the grievance procedure.</div>
+        <p>The skill here isn't choosing between "be nice" and "enforce rules." It's recognizing which mode a situation calls for — and knowing that even in a crisis response, participants retain procedural rights: a supervisor must approve any involuntary discharge, and that approval must be documented even if given verbally.</p>
+      `,
+      check: {
+        q: "A participant pulls a knife during an argument with another participant. Does this require the standard three-day warning meeting before any action?",
+        options: [
+          "Yes, every situation requires the warning process first",
+          "No — this poses immediate danger, so protective action can happen right away, though supervisor approval and proper documentation of any discharge are still required",
+          "No, staff can act however they choose with no oversight at all in danger situations"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. Immediate danger removes the requirement to wait through progressive warnings, but it doesn't remove the requirement for supervisor approval and documentation.",
+          incorrect: "Immediate danger does change the response timeline, but it doesn't eliminate oversight — supervisor approval and documentation are still required."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "dq1",
+        prompt: "Before a participant can be discharged for ongoing noncompliance (not immediate danger), what must staff do first?",
+        options: [
+          "Nothing, as long as the rule was clearly posted",
+          "Implement a documented progressive response system, including a meeting within 3 days of the issue being identified",
+          "Wait for the participant to request a meeting",
+          "Refer the matter directly to law enforcement"
+        ],
+        correctIndex: 1,
+        explain: "The standards require warnings, documented support, and a meeting within three days of identifying noncompliance — discharge is reserved for after this process, or for the narrow list of immediate-danger exceptions.",
+        cite: "Section A.19.2, A.21.1"
+      },
+      {
+        id: "dq2",
+        prompt: "Which best describes a trauma-informed approach as defined in the standards?",
+        options: [
+          "Treating every participant identically regardless of their history",
+          "An approach grounded in understanding the impact of trauma that emphasizes physical, psychological, and emotional safety and avoids retraumatizing practices",
+          "A strict, consequence-first approach to behavior management",
+          "A clinical diagnosis required before a participant can be admitted"
+        ],
+        correctIndex: 1,
+        explain: "The glossary defines trauma-informed care as centered on safety across multiple dimensions and on avoiding practices that retraumatize — that's the lens for de-escalation work.",
+        cite: "Glossary — Trauma-Informed"
+      },
+      {
+        id: "dq3",
+        prompt: "A participant has a documented pattern of chore noncompliance. Can this alone be grounds for discharge?",
+        options: [
+          "Yes, immediately",
+          "No — chore noncompliance can't be a reason for discharge unless there's a repeated pattern impacting other participants AND a corrective action plan was already implemented",
+          "Yes, but only after a single warning",
+          "No, chores can never factor into discharge under any circumstance"
+        ],
+        correctIndex: 1,
+        explain: "The standard sets a high bar specifically for chore-related discharge: a repeated, impactful pattern plus a documented corrective action plan that didn't resolve it.",
+        cite: "Section A.19.1(a), A.17.3"
+      },
+      {
+        id: "dq4",
+        prompt: "What is required for an involuntary discharge to be approved, even during a crisis?",
+        options: [
+          "Approval from any staff member on shift",
+          "Approval from a supervisor, which can be given verbally but must be documented in case notes",
+          "A signed statement from the participant agreeing to leave",
+          "A 30-day notice period"
+        ],
+        correctIndex: 1,
+        explain: "Even when a supervisor isn't physically on-site, one must be available on call to approve discharge decisions, and that approval — verbal or otherwise — must be documented.",
+        cite: "Section A.21.2(a)"
+      },
+      {
+        id: "dq5",
+        prompt: "A participant is escalating verbally but hasn't threatened anyone or shown a weapon. What does the standard favor as a first response?",
+        options: [
+          "Immediate discharge to prevent further escalation",
+          "Calling law enforcement before attempting to engage",
+          "Staff engagement and de-escalation consistent with a progressive, documented response — reserving discharge for after that process or for genuine danger",
+          "Ignoring the behavior entirely"
+        ],
+        correctIndex: 2,
+        explain: "Outside of genuine immediate danger, the standards consistently favor engagement, documentation, and graduated response over jumping straight to removal.",
+        cite: "Section A.19.2, A.21.1"
+      }
+    ]
+  },
+  remediation: {
+    intro: "De-escalation under these standards is a structured, documented process — not just a calm voice in the moment.",
+    points: [
+      { tag: "Default posture", text: "Assume distress reflects crisis or trauma, not defiance — respond with steadiness, not matched intensity." },
+      { tag: "Progressive response", text: "Warnings → documented support → a meeting within 3 days of identifying the issue → corrective action plan for repeat issues, before discharge is even on the table." },
+      { tag: "Chores are protected", text: "Chore noncompliance alone, even repeated, requires a corrective action plan first — it can never be an instant discharge reason." },
+      { tag: "Immediate danger is the exception", text: "Weapons, violence, and active threats bypass the warning sequence, but supervisor approval and documentation are still mandatory." },
+      { tag: "Discharge has guardrails", text: "Supervisor approval, no nighttime discharge absent an active threat, and a copy of the grievance procedure provided to the participant." }
+    ]
+  }
+},
+
+// ======================================================================
+// MODULE 3 — MANDATORY REPORTING
+// ======================================================================
+{
+  id: "mandatedreporting",
+  order: 3,
+  color: "berry",
+  dueWindow: "30 days",
+  title: "Mandatory reporting: child & elder abuse",
+  short: "Recognizing your reporting duty and acting on it correctly and quickly.",
+  description: "Shelters serve families, youth, and elders alongside the general adult population. This module covers who counts as a mandated reporter, what triggers a report, and how to handle the process in a way that's trauma-informed rather than punitive.",
+  sourceRef: "Section A.10.9, A.10.10",
+  lessons: [
+    {
+      id: "m1",
+      title: "What 'mandated reporter' actually means",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>The standards require every shelter's Policies and Procedures to include guidance on who is a mandated reporter and how to report and address any type of abuse — including child, spousal, or elder abuse. That guidance has to live in writing, not in institutional memory, because the consequences of getting it wrong run in both directions: failing to report can leave someone in danger, and mishandling a report can traumatize a family that did nothing wrong.</p>
+        <p>Mandated reporter status in California generally attaches to your <strong>role</strong>, not your job title. If your position involves regular contact with children, dependent adults, or elders in a caregiving or supervisory context, you are very likely a mandated reporter under state law regardless of whether "case manager" or "shelter aide" is in your job description.</p>
+        <div class="callout"><b>Standard in plain terms</b>Know your status before you need it. Find out now whether you're a mandated reporter — don't wait for a disclosure to figure it out.</div>
+      `,
+      check: {
+        q: "A janitorial staff member who has no direct contact with children wonders if mandated reporter training applies to them. What's the right approach?",
+        options: [
+          "Skip it — mandated reporting only applies to case managers",
+          "Every staff member should understand the shelter's reporting policy, since mandated reporter status depends on role and contact, and situations can arise unexpectedly",
+          "Only staff with a clinical license need this training"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. The standard requires this guidance for all staff — anyone present in a shelter serving families or vulnerable populations could witness or be told something that triggers a reporting duty.",
+          incorrect: "Mandated reporter status isn't limited to clinical or case management roles — it depends on contact and role, and the standard requires all staff understand the shelter's process."
+        }
+      }
+    },
+    {
+      id: "m2",
+      title: "Trauma-informed reporting, not punitive reporting",
+      minutes: 5,
+      tag: "Process",
+      body: `
+        <p>The standards require shelters to have a written plan and trauma-informed process for handling abuse reports made to appropriate reporting agencies. That phrase — <strong>trauma-informed process</strong> — is doing real work. A report is a legal obligation, but how you carry it out shapes whether a family trusts the shelter afterward, or disappears rather than risk further contact.</p>
+        <ul>
+          <li>Document what was observed or disclosed factually — avoid editorializing or assumptions in your notes.</li>
+          <li>Report to the appropriate agency as required by law and shelter policy — don't investigate or confront the situation yourself first.</li>
+          <li>Maintain confidentiality about the report to the greatest extent the law allows; this isn't a topic for general staff discussion.</li>
+          <li>Continue treating the family with the same dignity and non-judgmental service the standards require of every interaction — a report is not a discharge trigger.</li>
+        </ul>
+        <div class="callout scenario"><b>Scenario</b>A child in family shelter discloses something concerning to a staff member during a play session. The staff member's job is to listen, document factually, and report through the proper channel — not to interrogate the child for more detail or confront the parent directly.</div>
+      `,
+      check: {
+        q: "After a concerning disclosure from a child, what should staff do first?",
+        options: [
+          "Question the child further to gather more evidence before reporting",
+          "Confront the parent directly to get their side",
+          "Document the disclosure factually and report through the shelter's designated mandated reporting channel",
+          "Wait to see if the behavior happens again before acting"
+        ],
+        correctIndex: 2,
+        feedback: {
+          correct: "Correct. Mandated reporters report what they observed or were told — they aren't investigators. Documenting and routing through the proper channel protects the child and keeps the process trauma-informed.",
+          incorrect: "Further questioning, confrontation, or waiting can complicate an investigation and isn't the mandated reporter's role. Document and report."
+        }
+      }
+    },
+    {
+      id: "m3",
+      title: "Reporting doesn't end the relationship",
+      minutes: 3,
+      tag: "Practice",
+      body: `
+        <p>One of the hardest parts of mandated reporting in a shelter setting is that, unlike a one-time school or clinic visit, you'll likely keep serving this family or participant the next day. The standards' broader guiding principles — dignity, non-judgment, self-determination — don't pause because a report was filed.</p>
+        <p>This means staff need a plan for two things happening at once: complying with a legal reporting obligation, and continuing to deliver shelter services without treating the family as suspects or shutting down communication. The written, trauma-informed plan required by the standards exists precisely to keep these two responsibilities from working against each other.</p>
+        <div class="callout"><b>Key distinction</b>Reporting a concern to the appropriate agency is not the same as discharging a participant, and it isn't grounds for one. The standards' discharge criteria don't include "was the subject of a mandated report."</div>
+      `,
+      check: {
+        q: "True or false: filing a mandated report about a participant's family is itself a valid reason to discharge that family from the shelter.",
+        options: [
+          "True — it's a safety concern, so discharge is appropriate",
+          "False — a mandated report is not on the standards' list of valid discharge reasons, and the family should continue receiving services with dignity"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. Filing a report fulfills a legal duty; it doesn't change the family's standing in the shelter. Continued, respectful service is expected.",
+          incorrect: "A mandated report isn't a discharge trigger under the standards. The family continues receiving services unless an independent, listed discharge reason applies."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "mq1",
+        prompt: "What must be included in shelter Policies and Procedures regarding abuse?",
+        options: [
+          "A list of local law enforcement phone numbers only",
+          "Guidance on who is a mandated reporter and how to report and address any type of abuse, including child, spousal, or elder abuse",
+          "A clause stating shelter staff are exempt from reporting duties",
+          "Nothing specific — this is left entirely to individual judgment"
+        ],
+        correctIndex: 1,
+        explain: "Written guidance on mandated reporter status and reporting process is a required element of every shelter's Policies and Procedures.",
+        cite: "Section A.10.9"
+      },
+      {
+        id: "mq2",
+        prompt: "What kind of process must shelters have for handling abuse reports made to reporting agencies?",
+        options: [
+          "A purely procedural checklist with no consideration of participant experience",
+          "A written plan and trauma-informed process",
+          "An informal, unwritten understanding among senior staff",
+          "A process that defers entirely to law enforcement with no shelter involvement"
+        ],
+        correctIndex: 1,
+        explain: "The standard explicitly requires the plan to be both written and trauma-informed — recognizing that how a report is handled matters as much as that it's made.",
+        cite: "Section A.10.10"
+      },
+      {
+        id: "mq3",
+        prompt: "A staff member overhears a disclosure suggesting possible elder abuse involving a participant's family member who visits regularly. What category of abuse reporting does this fall under?",
+        options: [
+          "This isn't covered — mandated reporting only applies to children",
+          "Elder abuse, which is explicitly named alongside child and spousal abuse in the reporting standard",
+          "This should be handled only as an internal grievance",
+          "Nothing — visitors aren't covered by shelter abuse policies"
+        ],
+        correctIndex: 1,
+        explain: "The standard names child, spousal, and elder abuse together as categories requiring mandated reporting guidance — it isn't limited to situations involving children.",
+        cite: "Section A.10.9"
+      },
+      {
+        id: "mq4",
+        prompt: "Why does the standard specifically require the reporting process to be 'trauma-informed,' not just procedurally correct?",
+        options: [
+          "Because legal compliance alone doesn't address the emotional impact of the process on participants and families, who continue receiving shelter services afterward",
+          "Trauma-informed language is required by HUD regardless of content",
+          "It has no practical effect on how reports are handled",
+          "It only applies to reports involving staff misconduct"
+        ],
+        correctIndex: 0,
+        explain: "Because the shelter relationship continues after a report, a process focused only on legal mechanics — without attention to dignity and trust — risks doing additional harm or driving families away from needed services.",
+        cite: "Section A.10.10; Guiding Principles"
+      },
+      {
+        id: "mq5",
+        prompt: "Is filing a mandated report a valid, standalone reason to discharge a participant or family?",
+        options: [
+          "Yes, always",
+          "No — it isn't among the standards' listed discharge reasons, and reporting shouldn't change how the family is otherwise treated",
+          "Only if the report involves a child",
+          "Only with supervisor approval"
+        ],
+        correctIndex: 1,
+        explain: "The standards' list of valid discharge reasons doesn't include having been the subject of a mandated report. Service continues unless an independent, qualifying discharge reason exists.",
+        cite: "Section A.21.3"
+      }
+    ]
+  },
+  remediation: {
+    intro: "Mandated reporting misses tend to come from uncertainty about scope (who reports, what counts) or from treating a report as the end of the relationship rather than a parallel legal duty.",
+    points: [
+      { tag: "Scope", text: "Mandated reporter status depends on your role and contact with vulnerable populations — not your job title. Find out your status in advance." },
+      { tag: "Categories", text: "Child abuse, spousal abuse, and elder abuse are all explicitly named — this isn't limited to situations involving minors." },
+      { tag: "Your job is to report, not investigate", text: "Document factually, route through the proper channel, and don't interrogate or confront on your own." },
+      { tag: "Service continues", text: "A mandated report is not grounds for discharge and shouldn't change the dignity and quality of service a family receives." },
+      { tag: "Process must be written and trauma-informed", text: "Both qualities are explicitly required — legal compliance alone isn't sufficient." }
+    ]
+  }
+},
+
+// ======================================================================
+// MODULE 4 — UNIVERSAL PRECAUTIONS & INFECTIOUS DISEASE PREVENTION
+// ======================================================================
+{
+  id: "infectiousdisease",
+  order: 4,
+  color: "slate",
+  dueWindow: "30 days",
+  title: "Universal precautions & infectious disease prevention",
+  short: "Reducing transmission risk in congregate settings while respecting participant autonomy.",
+  description: "Congregate shelters create real transmission risk for TB, lice, scabies, and other aerosol-transmissible diseases — but the standards are equally clear that health concerns can't become an excuse for turning people away. This module covers the balance.",
+  sourceRef: "Section B.2, B.4, B.5",
+  lessons: [
+    {
+      id: "i1",
+      title: "Why congregate settings carry real risk",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>The standards are direct about the reason this training exists: congregate settings like emergency shelters create favorable conditions for disease transmission, and pose elevated risk for aerosol-transmissible diseases (ATDs) — illnesses spread when an infected person coughs, sneezes, or talks, including TB, influenza, and whooping cough.</p>
+        <p>Tuberculosis deserves special attention because it can sit latent in the body for years without symptoms, then become active and highly contagious. Because shelters serve a uniquely vulnerable population in close quarters, the standards put shelter staff in what they call a "uniquely important position to protect participant health through early detection and appropriate response."</p>
+        <div class="callout"><b>Universal precautions, defined</b>A standard set of practices — hand hygiene, proper PPE, safe sharps disposal — applied to everyone, every time, regardless of known infection status. You can't tell who's contagious by looking, so the precautions don't depend on a diagnosis.</div>
+      `,
+      check: {
+        q: "Why are universal precautions applied to all participants and staff, not just people known to be sick?",
+        options: [
+          "Because it's required for the shelter's insurance policy only",
+          "Because infectious status often isn't visibly known, especially with diseases like latent TB — so consistent baseline precautions protect everyone",
+          "Because it makes cleaning schedules simpler"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. Universal precautions exist precisely because you can't reliably identify who is contagious just by looking — consistency is what makes them effective.",
+          incorrect: "The point of universal precautions is that they don't depend on knowing someone's infection status — that's exactly what makes them protective in a congregate setting."
+        }
+      }
+    },
+    {
+      id: "i2",
+      title: "The cough alert and symptom response",
+      minutes: 5,
+      tag: "Process",
+      body: `
+        <p>Shelters must maintain protocols for responding to participants who are coughing — what the standards call a <strong>cough alert</strong> — and for referring participants showing symptoms of TB, lice, or scabies to a health care provider. Critically, none of this is about denying entry on sight.</p>
+        <ul>
+          <li><strong>TB testing cannot be required as a condition of entry.</strong> Shelters strongly encourage and facilitate testing within 90 days, but lack of a test is never grounds for turning someone away.</li>
+          <li>Participants showing active TB symptoms must be <strong>allowed to stay</strong>, strongly encouraged to mask, and referred to a provider within one week.</li>
+          <li>Participants with lice or scabies symptoms must be <strong>allowed to stay</strong>, isolated from others, and referred to care within one week.</li>
+        </ul>
+        <p>This is a deliberate balance: the standards exist to catch and respond to risk early, not to give shelters an easy reason to exclude people who are already vulnerable. Denial or discharge for infectious disease is reserved for narrow conditions — when containment genuinely isn't possible, when a participant won't comply with treatment and endangers others, or when the risk to others is significant — and even then, only after technical assistance from Alameda County Health Care for the Homeless (ACHCH).</p>
+        <div class="callout warn"><b>The TB + active cough exception</b>If a participant has tested positive for TB and does NOT have an active cough, they need a medical evaluation and chest x-ray within a week. If they DO have an active cough, they must immediately wear a mask and go to the hospital for evaluation — and staff must contact AC Health H&H right away.</div>
+      `,
+      check: {
+        q: "A participant shows symptoms suggestive of scabies. What's the correct first response?",
+        options: [
+          "Deny admission until symptoms clear",
+          "Allow them to stay, isolate them from other participants, and refer them to a health care provider within a week",
+          "Require a negative test result before allowing continued residence"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. The standard's response to scabies symptoms is allow, isolate, and refer — not exclude.",
+          incorrect: "Symptoms of scabies don't trigger denial or a testing requirement — participants are allowed to stay, isolated as needed, and referred for care within a week."
+        }
+      }
+    },
+    {
+      id: "i3",
+      title: "PPE, ventilation, and outbreak response",
+      minutes: 4,
+      tag: "Operations",
+      body: `
+        <p>Day-to-day infection control isn't only about responding to symptoms — it's baked into the physical environment. Shelters must maintain adequate PPE supplies and train staff, volunteers, and participants in proper use. Sleeping and common areas must be adequately ventilated, and shelters must comply with Cal/OSHA's Title 8, Section 5199 regulations on aerosol transmissible disease control.</p>
+        <p>During a declared public health emergency, the requirements intensify: a single point of contact with ACHCH, reduced-capacity bed arrangements confirmed with county partners, designated isolation spaces for symptomatic people, increased cleaning and disinfecting access for participants, and ongoing communication with participants and staff about the shelter's response.</p>
+        <div class="callout"><b>Notification duty</b>If a shelter determines an infectious disease seriously endangers participant or staff health, it must notify ACHCH. This isn't optional — it's how individual shelters connect into the county's broader public health response.</div>
+      `,
+      check: {
+        q: "What must a shelter do if it determines a participant's infectious disease seriously endangers the health of others?",
+        options: [
+          "Handle it entirely internally without outside involvement",
+          "Notify ACHCH (Alameda County Health Care for the Homeless)",
+          "Immediately discharge the participant without further steps"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. Notifying ACHCH connects the shelter to the technical assistance and broader public health response the situation may require.",
+          incorrect: "Shelters aren't expected to handle serious infectious disease determinations in isolation — ACHCH notification is required, and any denial/discharge decision requires their technical assistance."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "iq1",
+        prompt: "Can a shelter require a negative TB test as a condition of entry?",
+        options: [
+          "Yes, it's a standard intake requirement",
+          "No — TB testing cannot be required as a condition of entry, though shelters should encourage and facilitate testing within 90 days",
+          "Only for overnight-only shelters",
+          "Only during a declared public health emergency"
+        ],
+        correctIndex: 1,
+        explain: "The standard is explicit: testing can be encouraged and facilitated, but never required for entry.",
+        cite: "Section B.4.3"
+      },
+      {
+        id: "iq2",
+        prompt: "A participant shows symptoms of active TB. What's the required response?",
+        options: [
+          "Immediate discharge to protect other participants",
+          "Allow them to stay, strongly encourage masking, and refer to a health care provider within one week",
+          "Quarantine them off-site indefinitely with no shelter services",
+          "Require a clean test result before allowing them back inside"
+        ],
+        correctIndex: 1,
+        explain: "Symptoms alone are addressed through accommodation and referral, not exclusion — denial or discharge requires meeting one of the narrow conditions in B.4.6, with ACHCH technical assistance.",
+        cite: "Section B.4.4"
+      },
+      {
+        id: "iq3",
+        prompt: "Which set of supplies must be accessible to participants and staff at multiple locations throughout the shelter at all times?",
+        options: [
+          "Soap, water and hand-drying resources, hand sanitizer, tissues, face masks, and emptied wastebaskets",
+          "Only hand sanitizer",
+          "First aid kits only",
+          "Only items requested in writing by a participant"
+        ],
+        correctIndex: 0,
+        explain: "These specific hygiene supplies are required at multiple locations throughout the facility as a baseline infection-control measure.",
+        cite: "Section B.2.3"
+      },
+      {
+        id: "iq4",
+        prompt: "What must happen if shelter staff learn that a client has tested positive for TB and currently has an active cough?",
+        options: [
+          "Schedule a routine follow-up appointment within 90 days",
+          "The client must immediately wear a mask and be sent to the hospital for evaluation, and staff must contact AC Health H&H right away",
+          "No action is needed unless the client requests help",
+          "Discharge the client without further contact"
+        ],
+        correctIndex: 1,
+        explain: "An active cough combined with a positive TB test is treated as urgent — immediate masking, hospital evaluation, and contacting AC Health H&H for guidance.",
+        cite: "Section B.4.7"
+      },
+      {
+        id: "iq5",
+        prompt: "Under what condition(s) can a shelter deny admission or discharge a participant for an infectious disease?",
+        options: [
+          "Any time a participant reports feeling unwell",
+          "Only when the disease can't be appropriately contained, the participant isn't complying with treatment/containment and endangers others, or the disease significantly increases risk of harm to others — and only following ACHCH technical assistance",
+          "Whenever staff personally feel uncomfortable",
+          "Never, under any circumstances"
+        ],
+        correctIndex: 1,
+        explain: "The standard sets a narrow, specific bar for denial or discharge tied to actual containment and compliance failures, not general discomfort or precaution, and requires ACHCH involvement.",
+        cite: "Section B.4.6"
+      }
+    ]
+  },
+  remediation: {
+    intro: "The recurring theme in this module is balance: real transmission risk exists, but health concerns can't become a workaround for exclusion.",
+    points: [
+      { tag: "Universal precautions", text: "Applied to everyone, all the time — not based on who looks or seems sick." },
+      { tag: "Testing is never mandatory", text: "TB testing is encouraged and facilitated, never required for entry." },
+      { tag: "Default response is allow + isolate + refer", text: "For TB, lice, and scabies symptoms, participants stay, get isolated as appropriate, and are referred to care within a week." },
+      { tag: "Denial/discharge is the narrow exception", text: "Reserved for containment failure, treatment noncompliance with endangerment, or significant risk — always with ACHCH technical assistance." },
+      { tag: "Notify ACHCH", text: "Any serious infectious disease determination requires notifying Alameda County Health Care for the Homeless." }
+    ]
+  }
+},
+
+// ======================================================================
+// MODULE 5 — ANTI-DISCRIMINATION & REASONABLE ACCOMMODATION
+// ======================================================================
+{
+  id: "antidiscrimination",
+  order: 5,
+  color: "gold",
+  dueWindow: "30 days",
+  title: "Anti-discrimination & reasonable accommodation",
+  short: "ADA compliance, gender identity protections, and equal access in practice.",
+  description: "Equal access isn't an abstract value here — the standards translate it into specific, checkable rules: what you can and can't ask, who gets placed where, and what counts as a reasonable modification. This module covers disability access and transgender participant protections.",
+  sourceRef: "Section A.5, A.7(b), A.6.1",
+  lessons: [
+    {
+      id: "a1",
+      title: "ADA basics: what 'reasonable modification' means here",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>Shelters must comply with the Americans with Disabilities Act, and reasonable modifications must be made to programs, activities, and services to ensure equal access for individuals with disabilities — unless a modification would fundamentally alter the nature of the program. That last clause is a real limit, but it's a narrow one: it doesn't mean "whatever is easiest for staff."</p>
+        <p>Accessibility shows up in physical specifics too. Accessible beds must meet federal height and distance standards — a minimum of 36 inches between sleeping units and a sleeping surface 17 to 19 inches above the floor — and shelters should provide as many accessible beds as possible, even though not every bed is required to meet the standard.</p>
+        <div class="callout"><b>Important nuance</b>The Program Agreement and other key information must be available in accessible formats for hearing- and sight-impaired participants upon request — accessibility isn't limited to physical space.</div>
+      `,
+      check: {
+        q: "A participant who is blind asks for the Program Agreement in an accessible format. What does the standard require?",
+        options: [
+          "The shelter can decline since accessible formats aren't required for written documents",
+          "The shelter must provide the Program Agreement and other important information in accessible formats upon request",
+          "The participant must bring their own accessibility device"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. Accessible-format availability for important documents is an explicit requirement, not a courtesy.",
+          incorrect: "Document accessibility is required upon request — this is one of the specific ADA-related obligations named in the standards."
+        }
+      }
+    },
+    {
+      id: "a2",
+      title: "Service animals: the two-question rule",
+      minutes: 4,
+      tag: "Practice",
+      body: `
+        <p>The ADA gives staff a narrow, specific tool for assessing service animals — and the standards repeat it precisely because it's so easy to overreach. Staff may ask only two questions to determine if an animal is a service animal:</p>
+        <ol>
+          <li>Is the dog a service animal required because of a disability?</li>
+          <li>What work or task has the dog been trained to perform?</li>
+        </ol>
+        <p>That's the entire permitted inquiry. Staff may <strong>not</strong> ask about the nature of the disability, require documentation or certification, demand the animal demonstrate its task, or exclude the animal except under specific behavior-related conditions defined by the ADA.</p>
+        <p>Emotional support animals (ESAs) are a different category — they don't perform a specific trained task, so they aren't covered by the ADA's service animal protections. Shelters can choose whether to accommodate ESAs and pets, and may ask for documentation of need for an ESA, but this is a policy choice, not an ADA mandate.</p>
+      `,
+      check: {
+        q: "A participant arrives with a dog and says it's a service animal. Which question is staff allowed to ask?",
+        options: [
+          "\"What disability do you have?\"",
+          "\"What work or task has the dog been trained to perform?\"",
+          "\"Can I see certification papers for the dog?\""
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. This is one of the only two permitted questions under the ADA's service animal rule.",
+          incorrect: "Disability details and certification/documentation requests are both explicitly off-limits under the ADA service animal rule."
+        }
+      }
+    },
+    {
+      id: "a3",
+      title: "Gender identity: placement and what you cannot ask",
+      minutes: 5,
+      tag: "Protections",
+      body: `
+        <p>California law protects against discrimination based on gender identity, and the standards translate that into a concrete placement rule: participants are placed in rooms and beds consistent with their gender identity, with consideration of the participant's own views about what placement protects their health and safety.</p>
+        <p>The standards close off the most common ways this protection gets undermined in practice:</p>
+        <ul>
+          <li>Staff <strong>may not ask</strong> about a participant's anatomy, medical history, or sex assigned at birth when making placement decisions.</li>
+          <li>Staff <strong>may not deny placement</strong> based on another participant's complaint, when that complaint is based solely on someone's nonconformance with gender stereotypes.</li>
+        </ul>
+        <div class="callout scenario"><b>Scenario</b>Another participant complains that a transgender woman "doesn't look like she belongs" in the women's sleeping area. This complaint, on its own, is not a valid basis for changing or denying her placement — it's exactly the kind of stereotype-based objection the standard rules out.</div>
+        <p>This connects directly to the broader participant right to receive services without discrimination based on gender identity and/or sexual orientation, and to be protected against all forms of discrimination regardless of personal characteristics.</p>
+      `,
+      check: {
+        q: "Another participant complains that a transgender resident doesn't conform to typical gender presentation and asks staff to move them. What should staff do?",
+        options: [
+          "Move the transgender participant to avoid further complaints",
+          "Decline to change the placement on this basis — a complaint rooted solely in gender stereotype nonconformance isn't valid grounds for a placement change",
+          "Ask the transgender participant for medical documentation to settle the dispute"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. The standard explicitly rules out placement decisions based solely on stereotype-based complaints, and prohibits asking for medical or anatomical documentation.",
+          incorrect: "Acting on a stereotype-based complaint, or requesting medical documentation, both directly violate the standard's gender identity placement protections."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "aq1",
+        prompt: "Which two questions may staff ask to determine if an animal is a service animal under the ADA?",
+        options: [
+          "What is your disability, and how long have you had it?",
+          "Is the dog a service animal required because of a disability, and what work or task has it been trained to perform?",
+          "Do you have a certificate, and can the dog demonstrate the task?",
+          "Is this a permanent or temporary disability, and what breed is the dog?"
+        ],
+        correctIndex: 1,
+        explain: "These are the only two permitted inquiries — anything about the nature of the disability, documentation, or task demonstration is off-limits.",
+        cite: "Section A.6.1(a)"
+      },
+      {
+        id: "aq2",
+        prompt: "How must participants be placed with respect to gender identity?",
+        options: [
+          "Based on the gender listed on their government-issued ID",
+          "Based on staff's assessment of the participant's appearance",
+          "Consistent with their gender identity, with consideration of their own views regarding placements that protect their health and safety",
+          "Based on a vote among current residents of the relevant sleeping area"
+        ],
+        correctIndex: 2,
+        explain: "Placement follows the participant's own gender identity and their own safety-related preferences — not external documentation or others' assessments.",
+        cite: "Section A.5.7"
+      },
+      {
+        id: "aq3",
+        prompt: "Can a shelter ask a participant about their anatomy or gender assigned at birth before making a room placement decision?",
+        options: [
+          "Yes, this is standard practice for safety",
+          "No — shelters may not ask about anatomy, medical history, or sex assigned at birth when making placement decisions",
+          "Only if the participant is staying more than 30 days",
+          "Only if another participant requests it"
+        ],
+        correctIndex: 1,
+        explain: "This question is explicitly prohibited regardless of the reason offered for asking it.",
+        cite: "Section A.5.8"
+      },
+      {
+        id: "aq4",
+        prompt: "What are the minimum federal height and distance standards for an ADA-accessible sleeping unit?",
+        options: [
+          "No minimum distance; sleeping surface at any height",
+          "A minimum of 36 inches between sleeping units, with a sleeping surface 17–19 inches above the finished floor",
+          "A minimum of 10 feet between units, with no height requirement",
+          "Accessible beds must be on the ground floor only, with no other specifications"
+        ],
+        correctIndex: 1,
+        explain: "These are the specific federal standards named for ADA-accessible beds — shelters should provide as many as possible, though not all beds are required to meet them.",
+        cite: "Section A.5.5"
+      },
+      {
+        id: "aq5",
+        prompt: "Can a complaint from another participant, based solely on someone's nonconformance with gender stereotypes, be used to deny or change a placement?",
+        options: [
+          "Yes, participant comfort always takes priority",
+          "No — placement decisions cannot be based on such complaints when stereotype nonconformance is the sole basis",
+          "Yes, but only with supervisor approval",
+          "Only if multiple participants file the same complaint"
+        ],
+        correctIndex: 1,
+        explain: "The standard specifically closes this loophole — a stereotype-based complaint alone is never sufficient grounds for a placement change.",
+        cite: "Section A.5.9"
+      }
+    ]
+  },
+  remediation: {
+    intro: "The pattern across this module: equal access rules work by limiting what staff can ask or require, not by adding judgment calls.",
+    points: [
+      { tag: "Service animals", text: "Only two permitted questions; no documentation, no task demonstration, no disability detail." },
+      { tag: "Gender placement", text: "Follows the participant's own identity and safety preference — never anatomy, medical history, or birth-assigned sex." },
+      { tag: "Stereotype complaints don't count", text: "A complaint based solely on gender nonconformance can't justify a placement change." },
+      { tag: "Document accessibility", text: "Available in accessible formats for hearing- and sight-impaired participants upon request." },
+      { tag: "Reasonable modification, not unlimited", text: "Required unless it would fundamentally alter the program — a real but narrow limit." }
+    ]
+  }
+},
+
+// ======================================================================
+// MODULE 6 — SHELTER POLICIES & ENFORCEMENT
+// ======================================================================
+{
+  id: "policiesenforcement",
+  order: 6,
+  color: "moss",
+  dueWindow: "30 days",
+  title: "Shelter policies & enforcement of compliance",
+  short: "Fair, consistent application of rules — and why consistency is itself a standard.",
+  description: "The standards repeat one phrase so often it's almost a refrain: applied consistently and fairly. This module covers why uniform enforcement matters and how the Program Agreement, search policy, and discharge rules work together as one fairness system.",
+  sourceRef: "Section A.1, A.13, A.19, A.21",
+  lessons: [
+    {
+      id: "p1",
+      title: "Consistency is the standard, not a nice-to-have",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>The Use of Standards section states the principle plainly: in implementing these standards and shelter policies, it is essential that all policies and procedures be applied consistently and fairly to all participants and situations to avoid perceptions of favoritism or fostering a culture of mistrust.</p>
+        <p>This isn't background philosophy — it's repeated as an explicit requirement attached to specific policies: search procedures must be applied consistently, uniformly and fairly to all participants; behavior-based criteria for animals must be applied consistently based on observed behavior rather than breed or appearance; documentation requirements for family eligibility must be applied uniformly to all adults regardless of gender.</p>
+        <div class="callout"><b>Why it's structural, not just ethical</b>A shelter housing dozens of people in crisis runs on trust. The moment participants believe rules bend for some and not others, the whole system of voluntary cooperation — chores, curfew, search consent — breaks down.</div>
+      `,
+      check: {
+        q: "Two participants violate the same posted rule under similar circumstances. One gets a warning; the other is searched and threatened with discharge. What does this violate?",
+        options: [
+          "Nothing, as long as each individual response was reasonable on its own",
+          "The standards' explicit requirement that policies be applied consistently and fairly to avoid favoritism and mistrust",
+          "This is fine as long as supervisors approved both responses"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. Even individually defensible responses become a problem when applied unevenly across similar situations — consistency is the standard.",
+          incorrect: "Individual reasonableness doesn't satisfy the requirement. The standard is about consistent application across similar situations, not case-by-case justification alone."
+        }
+      }
+    },
+    {
+      id: "p2",
+      title: "What belongs in the Program Agreement",
+      minutes: 4,
+      tag: "Practice",
+      body: `
+        <p>The Program Agreement is the document that turns internal Policies and Procedures into something a participant actually understands and signs. The standards require it to include, at minimum: the grievance form and process, the substandard site conditions form, privacy/confidentiality practices, medication policies, storage policies, the enforcement process, reasons for discharge, participant rights, all program rules, and a Release of Information form.</p>
+        <p>Process matters as much as content. At intake, the Program Agreement must be verbally explained in the participant's primary language, provided in writing, and the participant must sign an acknowledgment that's kept in their file. It must also be translated into the county's threshold languages — currently Spanish, Cantonese, Vietnamese, Mandarin, Farsi, Cambodian, and Tagalog — with more added as needed.</p>
+        <div class="callout"><b>Why this matters for enforcement</b>You can't fairly enforce a rule a participant never understood. The verbal explanation and translated written copy are what make later enforcement legitimate.</div>
+      `,
+      check: {
+        q: "A participant whose primary language is Vietnamese receives only an English copy of the Program Agreement at intake, with no verbal explanation. Is this compliant?",
+        options: [
+          "Yes, as long as a translated copy is available somewhere on site",
+          "No — the standard requires verbal explanation in the participant's primary language plus a written copy, and Vietnamese is one of the county's threshold languages",
+          "Yes, since English is the shelter's primary operating language"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. Both the verbal explanation in-language and the written translated copy are required — not just availability somewhere in the building.",
+          incorrect: "Availability isn't enough — the standard requires active verbal explanation in the participant's primary language at intake, plus a written copy."
+        }
+      }
+    },
+    {
+      id: "p3",
+      title: "Search policy as a case study in fairness",
+      minutes: 4,
+      tag: "Deep dive",
+      body: `
+        <p>Search of participant possessions is one of the most invasive things a shelter can do, so the standards build fairness directly into the policy requirements. Searches can only happen when the health and safety of participants or staff is believed to be at risk — not as a routine or punitive measure. Search procedures must reflect a trauma-informed approach and protect privacy to the greatest degree possible.</p>
+        <p>If a participant doesn't consent to a search, discharge can't be the immediate fallback — the shelter must offer other options first, with discharge reserved as a last resort. And, as with everything else in this module, the policy must be applied consistently, uniformly, and fairly to all participants.</p>
+        <div class="callout warn"><b>What this rules out</b>Searching only participants who "seem suspicious," or applying a stricter standard to certain participants than others, undermines both the letter and the purpose of this requirement.</div>
+      `,
+      check: {
+        q: "Under what circumstance can a participant's possessions be searched?",
+        options: [
+          "Any time staff want to check for prohibited items",
+          "Only when the health and safety of participants and/or staff is believed to be at risk, applied consistently to all participants",
+          "Only with a warrant from local law enforcement"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. Searches are tied to a genuine safety concern, not routine suspicion, and must be applied evenly across the participant population.",
+          incorrect: "Routine or suspicion-based searches without a genuine safety basis, or uneven application across participants, both fall outside what the standard permits."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "pq1",
+        prompt: "Why do the standards repeatedly emphasize 'consistent and fair' application of policies?",
+        options: [
+          "It's a legal formality with no operational impact",
+          "To avoid perceptions of favoritism and prevent a culture of mistrust that undermines shelter operations",
+          "It only matters for grant compliance reporting",
+          "It applies only to discharge decisions, not other policies"
+        ],
+        correctIndex: 1,
+        explain: "The Use of Standards section states this directly — uneven enforcement breeds mistrust and undermines the shelter's functioning as a community.",
+        cite: "Use of Standards section"
+      },
+      {
+        id: "pq2",
+        prompt: "What must happen with the Program Agreement at intake?",
+        options: [
+          "It only needs to be available in the front office for reference",
+          "It must be verbally explained to the participant in their primary language and provided in writing, with a signed acknowledgment kept in the file",
+          "It can be summarized briefly with full review postponed until week two",
+          "Only the grievance section needs to be reviewed at intake"
+        ],
+        correctIndex: 1,
+        explain: "Verbal explanation in-language, a written copy, and a signed acknowledgment are all required at intake — not just availability or partial review.",
+        cite: "Section A.1.5, A.1.6, A.3.3, A.3.4"
+      },
+      {
+        id: "pq3",
+        prompt: "What is the threshold for searching a participant's private possessions?",
+        options: [
+          "Staff discretion based on a participant's demeanor",
+          "The health and safety of participants and/or staff is believed to be at risk",
+          "Any participant who has previously had a complaint filed against them",
+          "Random periodic checks of all participants"
+        ],
+        correctIndex: 1,
+        explain: "The standard ties search authority to a genuine, articulable safety concern — not general discretion or random checks.",
+        cite: "Section A.13.2(a)"
+      },
+      {
+        id: "pq4",
+        prompt: "If a participant refuses to consent to a search, what must the shelter do?",
+        options: [
+          "Discharge them immediately for noncompliance",
+          "Provide the participant with options other than discharge, using discharge only as a last resort",
+          "Call law enforcement to compel the search",
+          "Ignore the refusal and proceed with the search anyway"
+        ],
+        correctIndex: 1,
+        explain: "Discharge is explicitly the last resort, not the default response, when a participant declines to consent to a search.",
+        cite: "Section A.13.2(c)"
+      },
+      {
+        id: "pq5",
+        prompt: "Which of these is one of the county's current threshold languages requiring Program Agreement translation?",
+        options: [
+          "German",
+          "Vietnamese",
+          "Russian",
+          "Korean"
+        ],
+        correctIndex: 1,
+        explain: "The current threshold languages are Spanish, Cantonese, Vietnamese, Mandarin, Farsi, Cambodian, and Tagalog, with translation into additional languages as needed.",
+        cite: "Section A.1.4"
+      }
+    ]
+  },
+  remediation: {
+    intro: "This module's throughline is fairness as an operational requirement, not just an aspiration — it shows up in concrete rules about how policies are written, communicated, and enforced.",
+    points: [
+      { tag: "Consistency is explicit", text: "Search, animal behavior, eligibility documentation, and general enforcement policies must all be applied uniformly — the standards say so directly, repeatedly." },
+      { tag: "Understanding precedes enforcement", text: "Verbal, in-language explanation plus a written copy of the Program Agreement at intake is what makes later enforcement fair." },
+      { tag: "Search requires genuine risk", text: "Not suspicion, not routine, not selective application — only a believed risk to health and safety." },
+      { tag: "Discharge is the last resort", text: "Whether for search refusal or general noncompliance, the standards build in steps before discharge becomes appropriate." },
+      { tag: "Threshold languages", text: "Spanish, Cantonese, Vietnamese, Mandarin, Farsi, Cambodian, Tagalog — know these for translation requirements." }
+    ]
+  }
+},
+
+// ======================================================================
+// MODULE 7 — ALAMEDA COUNTY EMERGENCY SHELTER STANDARDS OVERVIEW
+// ======================================================================
+{
+  id: "standardsoverview",
+  order: 7,
+  color: "slate",
+  dueWindow: "30 days",
+  title: "Alameda County Emergency Shelter Standards: the big picture",
+  short: "Guiding principles, structure of the standards, and how waivers work.",
+  description: "Before diving into any single section, every staff member should understand where these standards came from, what they're trying to achieve, and how the document is organized. This module is the map for everything else.",
+  sourceRef: "Preface, Guiding Principles, Use of Standards",
+  lessons: [
+    {
+      id: "s1",
+      title: "Three guiding principles, one shelter system",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>Everything in this document traces back to three guiding principles. A shelter should:</p>
+        <ul>
+          <li><strong>Provide safe indoor space</strong> — basic needs met, participants feel secure, everyone protected from harm.</li>
+          <li><strong>Offer an opportunity to stabilize</strong> — a supportive environment to access services and work toward goals at one's own pace.</li>
+          <li><strong>Support exit to better circumstances</strong> — active connection to housing and resources, delivered with respect for each person's barriers and readiness.</li>
+        </ul>
+        <p>The standards describe shelter as often "the last option available to people with nowhere else to turn," and frame the goal as making every Alameda County-funded shelter "not just a place to sleep, but a meaningful step toward stability."</p>
+        <div class="callout"><b>Why this matters for daily work</b>When a specific rule feels ambiguous, these three principles are the test: does this choice keep someone safe, help them stabilize, or move them toward something better?</div>
+      `,
+      check: {
+        q: "Which best captures the third guiding principle?",
+        options: [
+          "Participants must exit within a fixed time limit to make room for new admissions",
+          "Active connection to housing and resources that opens a path forward, with respect for each person's barriers and pace",
+          "Shelters should focus exclusively on overnight safety with no service connection"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. 'Support exit to better circumstances' is about active connection and respect for individual readiness — not a fixed timeline.",
+          incorrect: "There's no fixed time limit in the guiding principles — in fact, the standards explicitly prohibit maximum length-of-stay requirements elsewhere in the document."
+        }
+      }
+    },
+    {
+      id: "s2",
+      title: "Where the standards came from",
+      minutes: 4,
+      tag: "Context",
+      body: `
+        <p>Alameda County's shelter standards aren't a top-down document — they were built from extensive community input, twice. The original 2017 standards came from surveying existing shelters, reviewing other communities' standards and federal funder requirements (ESG, FEMA), and incorporating feedback from 28 shelter programs and dozens of stakeholders.</p>
+        <p>The 2026 revision, aligned with the county's Home Together Plan, went even further: listening sessions with 32 shelter providers across 15 agencies, listening sessions with 97 shelter participants at 10 sites, surveys from 100 shelter participants across 13 programs, interviews with 74 unsheltered people, and input from the Youth Advisory Board.</p>
+        <div class="callout"><b>Why this matters</b>These standards reflect what providers and people experiencing homelessness themselves identified as important — not an abstract compliance checklist imposed from outside the system.</div>
+      `,
+      check: {
+        q: "What kind of input most shaped the 2026 revision of the standards?",
+        options: [
+          "Exclusively federal funder requirements with no local input",
+          "Extensive listening sessions and surveys with shelter providers and shelter participants, plus interviews with unsheltered people and Youth Advisory Board input",
+          "A single county staff review with no outside consultation"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. The revision process deliberately centered the voices of providers, participants, and unsheltered people themselves.",
+          incorrect: "The standards describe an extensive, multi-method community engagement process — not a top-down or purely federal-driven revision."
+        }
+      }
+    },
+    {
+      id: "s3",
+      title: "How waivers work",
+      minutes: 4,
+      tag: "Process",
+      body: `
+        <p>The standards aren't meant to be applied rigidly when they genuinely conflict with something else important — but flexibility runs through a formal process, not informal exceptions. A shelter may request a waiver when a standard conflicts with another governmental or funder requirement, conflicts with client safety or program quality, or when physical/space limitations make compliance impossible.</p>
+        <p>The process requires a written request on agency letterhead, signed by an executive, citing the specific standard, the shelter location, the proposed alternative policy, and the rationale. Alameda County H&H responds within 30 days with approval, denial, or a request for more information. Approved waivers last for the duration of the provider's contract and must be renewed with each new contract.</p>
+        <div class="callout warn"><b>What a waiver isn't</b>An informal workaround, a unilateral decision by shelter staff, or a permanent exemption that never needs renewal.</div>
+      `,
+      check: {
+        q: "A shelter believes a specific standard conflicts with client safety given its physical layout. What's the correct path forward?",
+        options: [
+          "Simply stop following that standard going forward",
+          "Submit a formal waiver request to Alameda County H&H citing the standard, location, proposed alternative, and rationale",
+          "Wait until the next county site visit to mention it informally"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. The formal waiver process exists precisely for situations like this — it protects both the shelter and participants by keeping the exception documented and reviewed.",
+          incorrect: "Standards can't be unilaterally set aside or addressed informally — the formal waiver request process is the only compliant path."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "sq1",
+        prompt: "What are the three guiding principles behind Alameda County's shelter standards?",
+        options: [
+          "Cost control, capacity maximization, and rapid turnover",
+          "Provide safe indoor space, offer an opportunity to stabilize, and support exit to better circumstances",
+          "Strict rule enforcement, uniform scheduling, and centralized intake",
+          "Medical screening, criminal background checks, and curfew enforcement"
+        ],
+        correctIndex: 1,
+        explain: "These three principles anchor the entire standards document and the philosophy behind individual requirements.",
+        cite: "Guiding Principles section"
+      },
+      {
+        id: "sq2",
+        prompt: "Approximately how many shelter participants were engaged through listening sessions during the 2026 standards revision?",
+        options: [
+          "0 — participants were not consulted",
+          "97 participants across 10 shelters",
+          "5 participants total",
+          "Only staff, not participants, were consulted"
+        ],
+        correctIndex: 1,
+        explain: "The revision process included listening sessions with 97 participants at 10 shelters, in addition to surveys, interviews with unsheltered people, and provider input.",
+        cite: "Preface"
+      },
+      {
+        id: "sq3",
+        prompt: "On what basis can a shelter request a waiver from a specific standard?",
+        options: [
+          "Whenever the shelter prefers a different approach for convenience",
+          "Conflict with another governmental/funder requirement, conflict with client safety or program quality, or physical/space limitations",
+          "Only at the very start of a new county contract",
+          "Waivers are not available under any circumstance"
+        ],
+        correctIndex: 1,
+        explain: "These are the specific, named bases for a waiver request — convenience or preference alone isn't sufficient.",
+        cite: "Use of Standards section"
+      },
+      {
+        id: "sq4",
+        prompt: "How long are approved waivers valid for, and what happens at contract renewal?",
+        options: [
+          "Waivers are permanent and never need renewal",
+          "Waivers last for the duration of the provider's contract and must be renewed upon execution of subsequent contracts",
+          "Waivers expire after 30 days regardless of contract length",
+          "Waivers automatically transfer to any other shelter site the provider operates"
+        ],
+        correctIndex: 1,
+        explain: "Waivers are tied to the specific contract period and require renewal with each new contract — they aren't indefinite or site-transferable by default.",
+        cite: "Use of Standards section"
+      },
+      {
+        id: "sq5",
+        prompt: "When were the original Alameda County Emergency Shelter Standards adopted by the Board of Supervisors?",
+        options: [
+          "February 27, 2017",
+          "March 2016",
+          "2022",
+          "June 3, 2026"
+        ],
+        correctIndex: 0,
+        explain: "The Board of Supervisors originally adopted the standards on February 27, 2017, following the 2016 public comment period; the document in front of you is the 2026 revision.",
+        cite: "Preface"
+      }
+    ]
+  },
+  remediation: {
+    intro: "This overview module sets the frame for every other module — the details all serve the same three goals.",
+    points: [
+      { tag: "Three principles", text: "Safe indoor space, opportunity to stabilize, support to exit — use these as your test when a specific rule feels ambiguous." },
+      { tag: "Community-built", text: "Both the 2017 original and 2026 revision were shaped by extensive input from providers and people with lived experience of homelessness." },
+      { tag: "Waivers are formal", text: "Written request, executive signature, specific standard cited, 30-day county response, tied to contract duration." },
+      { tag: "Standards are a floor, not a ceiling", text: "Where the standards are silent, providers can develop their own policies — but where they speak, compliance is required." }
+    ]
+  }
+},
+
+// ======================================================================
+// MODULE 8 — EMERGENCY EVACUATION & FIRE SAFETY
+// ======================================================================
+{
+  id: "fireSafety",
+  order: 8,
+  color: "rust",
+  dueWindow: "30 days",
+  title: "Emergency evacuation & fire safety",
+  short: "Building safety requirements, drills, and emergency preparedness duties.",
+  description: "Physical safety is foundational to the first guiding principle. This module covers fire code compliance, evacuation readiness, and the emergency response planning every shelter must maintain.",
+  sourceRef: "Section E.1, B.2.4-B.2.6",
+  lessons: [
+    {
+      id: "f1",
+      title: "Fire code compliance and inspections",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>All shelter facilities must comply with applicable local building and fire codes, and must have annual fire inspections conducted by the fire department along with regular fire drills. Staff must receive training on fire safety — which is exactly the training you're completing now.</p>
+        <p>Physical details matter just as much as paperwork: exits must be clearly marked and kept clear of blockage and tripping hazards, with signage consistent with applicable codes. Steps must have handrails as required by code, plus treads or similar accommodation to prevent slipping.</p>
+        <div class="callout warn"><b>A blocked exit isn't a minor issue</b>A storage cart "temporarily" parked in front of a fire exit, or a coat rack narrowing a hallway, is a direct violation — not a judgment call.</div>
+      `,
+      check: {
+        q: "A staff member notices boxes have been stacked in front of an exit door for a few days during a renovation. What does the standard require?",
+        options: [
+          "It's fine temporarily during a renovation",
+          "Exits must be kept clear of blockage and tripping hazards at all times — this needs to be corrected immediately",
+          "This is only a problem if the fire department happens to inspect that day"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. Exit clearance is a constant requirement, not something that can be deprioritized temporarily for convenience.",
+          incorrect: "There's no exception for renovations or short timeframes — exits must always be clear of blockage and tripping hazards."
+        }
+      }
+    },
+    {
+      id: "f2",
+      title: "Emergency response planning beyond fire",
+      minutes: 4,
+      tag: "Practice",
+      body: `
+        <p>Fire safety is one piece of a broader emergency preparedness requirement. Every shelter must have a written emergency response plan describing procedures for responding to emergencies that could affect operations or participant/staff safety — and that plan must specifically include provisions for identifying and assisting residents with limited mobility.</p>
+        <p>Shelters must also own and maintain an Automated External Defibrillator (AED), document its maintenance, and ensure its operation is the responsibility of on-duty staff trained in CPR. Basic first aid supplies, AEDs, and naloxone must be on-site and accessible whenever participants are present.</p>
+        <div class="callout"><b>Multi-story consideration</b>Multi-story shelters are encouraged to have emergency evacuation chairs in stairwells, scaled to the size of the shelter — elevators typically can't be used during a fire evacuation, so this matters for anyone with mobility limitations.</div>
+      `,
+      check: {
+        q: "Why must emergency response plans specifically address residents with limited mobility?",
+        options: [
+          "It's an optional best practice with no specific requirement",
+          "Because standard evacuation methods like elevators are often unavailable during emergencies, and the standard requires explicit provisions for this population",
+          "Only shelters with elevators need to consider this"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. The standard explicitly requires this as a plan component — it's not left to be addressed only if it comes up.",
+          incorrect: "This is an explicit requirement of every shelter's emergency response plan, not an optional add-on or elevator-dependent concern."
+        }
+      }
+    },
+    {
+      id: "f3",
+      title: "Drills, signage, and the rhythm of preparedness",
+      minutes: 3,
+      tag: "Operations",
+      body: `
+        <p>Preparedness isn't a one-time setup — it's a recurring rhythm. Fire drills must happen regularly, not just once when a new facility opens. Annual fire department inspections create an external check, but drills build the muscle memory staff and participants need when an actual emergency happens.</p>
+        <p>This connects to the standards' general posture toward inspections: shelters must perform timely inspections in response to complaints about possible substandard conditions, and must cooperate with both announced and unannounced annual inspections from the local jurisdiction, correcting cited violations within the specified timeframe.</p>
+        <div class="callout"><b>The throughline</b>Fire safety standards exist because the first guiding principle — safe indoor space — depends on physical readiness, not just good intentions.</div>
+      `,
+      check: {
+        q: "How often must shelters conduct fire drills?",
+        options: [
+          "Once, when the facility first opens",
+          "On a regular, recurring basis, not just a single initial drill",
+          "Only after an actual fire incident occurs"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. Regular fire drills build readiness over time — a single drill at opening doesn't satisfy an ongoing requirement.",
+          incorrect: "A single drill, or waiting for an actual incident, doesn't meet the requirement for regular fire drills."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "fq1",
+        prompt: "What must shelters maintain regarding fire inspections?",
+        options: [
+          "No formal inspection schedule is required",
+          "Annual fire inspections conducted by the fire department, plus regular fire drills",
+          "A single inspection at the time of opening only",
+          "Inspections only if requested by the county"
+        ],
+        correctIndex: 1,
+        explain: "Annual fire department inspections and regular drills are both explicitly required, working together as ongoing readiness measures.",
+        cite: "Section E.1.5"
+      },
+      {
+        id: "fq2",
+        prompt: "What is required of building exits at all times?",
+        options: [
+          "Clearly marked and kept clear of blockage and tripping hazards",
+          "Locked except during business hours",
+          "Marked only if the building has more than one floor",
+          "No specific requirements beyond local preference"
+        ],
+        correctIndex: 0,
+        explain: "Clear marking and an unobstructed path are continuous requirements, with signage meeting applicable code standards.",
+        cite: "Section E.1.7"
+      },
+      {
+        id: "fq3",
+        prompt: "What must every shelter's emergency response plan specifically include?",
+        options: [
+          "A media communication strategy",
+          "Provisions for identifying and assisting residents with limited mobility",
+          "A list of preferred vendors for repairs",
+          "A staff vacation schedule"
+        ],
+        correctIndex: 1,
+        explain: "This is named explicitly as a required plan component, recognizing that mobility limitations create distinct evacuation challenges.",
+        cite: "Section B.2.6"
+      },
+      {
+        id: "fq4",
+        prompt: "Who is responsible for AED operation at a shelter?",
+        options: [
+          "Any participant present at the time",
+          "On-duty staff trained in CPR",
+          "Only off-site emergency medical personnel",
+          "The shelter's executive director exclusively"
+        ],
+        correctIndex: 1,
+        explain: "The standard places AED operation responsibility specifically with on-duty staff who have CPR training.",
+        cite: "Section B.2.5"
+      },
+      {
+        id: "fq5",
+        prompt: "What must shelters do regarding handrails and steps?",
+        options: [
+          "Handrails are optional if the shelter is single-story",
+          "Handrails as required by applicable codes, plus treads or similar accommodation to prevent slipping",
+          "Only new construction needs handrails",
+          "Handrails are only required on exterior steps"
+        ],
+        correctIndex: 1,
+        explain: "Both handrail compliance and slip-prevention treads are explicit physical plant requirements, applying broadly across the facility.",
+        cite: "Section E.1.8"
+      }
+    ]
+  },
+  remediation: {
+    intro: "Fire safety and emergency preparedness combine ongoing physical maintenance with planning that accounts for the full range of people a shelter serves.",
+    points: [
+      { tag: "Inspections + drills", text: "Annual fire department inspections and regular fire drills work together — neither alone satisfies the requirement." },
+      { tag: "Exits are non-negotiable", text: "Clear of blockage and tripping hazards, at all times, with code-compliant signage." },
+      { tag: "Mobility-inclusive planning", text: "Emergency response plans must explicitly address residents with limited mobility, since elevators often aren't usable during emergencies." },
+      { tag: "AED + CPR pairing", text: "AED operation responsibility sits with on-duty, CPR-trained staff, and maintenance must be documented." },
+      { tag: "Stairs need both", text: "Code-compliant handrails and slip-resistant treads — together, not either-or." }
+    ]
+  }
+},
+
+// ======================================================================
+// MODULE 9 — ETHICS & BOUNDARIES
+// ======================================================================
+{
+  id: "ethicsboundaries",
+  order: 9,
+  color: "berry",
+  dueWindow: "30 days",
+  title: "Ethics & boundaries",
+  short: "Professional relationships, favoritism, and the line between support and overreach.",
+  description: "Shelter work happens in close, sustained proximity to people in vulnerable circumstances. This module covers the professional boundaries that protect both participants and staff, and why dignity-based, non-judgmental service depends on them.",
+  sourceRef: "Section G.1, A.7(f), A.7(k)",
+  lessons: [
+    {
+      id: "e1",
+      title: "Professional, not personal — and why that protects participants",
+      minutes: 4,
+      tag: "Foundation",
+      body: `
+        <p>The standards require shelter staff to treat participants with dignity and respect from a trauma-informed perspective that is professional and avoids favoritism. Notice that "professional" and "avoids favoritism" appear in the same sentence — they're connected ideas, not separate requirements.</p>
+        <p>Participants also have an explicit right to be provided with services only in the context of a professional relationship based on valid, informed consent. This boundary exists because the power dynamic between shelter staff and participants is real: staff control access to beds, services, referrals, and sometimes discharge decisions. A blurred personal relationship — even a well-intentioned one — can compromise a participant's ability to give truly free, informed consent to anything.</p>
+        <div class="callout"><b>What this isn't</b>This isn't a call to be cold or distant. Warmth, respect, and genuine care are exactly what the standards ask for — within a relationship that stays professional rather than personal.</div>
+      `,
+      check: {
+        q: "Why does the standard specifically link 'professional relationship' to participant rights around consent?",
+        options: [
+          "Because professionalism is just a formality with no real connection to consent",
+          "Because the power imbalance between staff and participants means a blurred personal relationship can compromise a participant's ability to give free, informed consent",
+          "Because participants prefer formal relationships with staff"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. The professional-relationship requirement exists to protect participants' genuine ability to consent, given the real power imbalance in the shelter setting.",
+          incorrect: "The connection isn't about formality for its own sake — it's about protecting the integrity of consent given real power differences between staff and participants."
+        }
+      }
+    },
+    {
+      id: "e2",
+      title: "Favoritism erodes trust faster than almost anything else",
+      minutes: 4,
+      tag: "Practice",
+      body: `
+        <p>Favoritism — whether it's an extra privilege, a relaxed rule, or simply more attention given to a particular participant — does direct damage to the standards' core goals. It's named explicitly, multiple times, as something policies must avoid: applying rules consistently and fairly "to avoid perceptions of favoritism or fostering a culture of mistrust."</p>
+        <p>This can show up subtly. A staff member who has a friendly rapport with one participant might unconsciously give them more leeway on curfew, or share information they wouldn't share with others, or advocate harder for their housing referral. None of that requires bad intent — but the effect on other participants, who notice these patterns quickly, is the same as if it were deliberate.</p>
+        <div class="callout scenario"><b>Scenario</b>A staff member has built real rapport with a participant over several weeks and starts giving them small breaks other participants don't get — a later curfew here, an unlogged exception there. Even though it comes from genuine care, this is exactly the favoritism pattern the standards are designed to prevent.</div>
+      `,
+      check: {
+        q: "A staff member feels genuine warmth toward a participant and starts quietly bending small rules for them. Is this a problem under the standards, even without bad intent?",
+        options: [
+          "No, as long as the staff member's intentions are good",
+          "Yes — favoritism damages trust regardless of intent, and policies must be applied consistently to avoid exactly this pattern",
+          "Only if other participants formally complain"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Correct. The standard's concern with favoritism doesn't hinge on intent — consistent application protects against the effect, not just deliberate misconduct.",
+          incorrect: "Good intentions don't change the impact. The standard requires consistent application precisely because favoritism often comes from genuine, well-meaning rapport rather than deliberate unfairness."
+        }
+      }
+    },
+    {
+      id: "e3",
+      title: "Self-determination and the limits of staff influence",
+      minutes: 4,
+      tag: "Boundaries",
+      body: `
+        <p>Ethics in shelter work also means respecting the limits of your own role. Participants have an explicit right to use self-determination in identifying and setting their own goals, and to participate in support services voluntarily — they cannot be discharged solely for declining to participate.</p>
+        <p>This means a staff member's job is to offer, inform, and support — not to pressure a participant toward a particular choice about treatment, housing, or services because the staff member believes it's best. The standards reinforce this directly elsewhere: engaging in substance use treatment, for example, is explicitly a participant's choice, not a requirement to remain in shelter.</p>
+        <div class="callout warn"><b>The boundary in practice</b>"I think you should..." repeated insistently crosses from support into pressure. "Here's what's available, and I'm here whenever you want to talk it through" respects self-determination while staying genuinely engaged.</div>
+      `,
+      check: {
+        q: "A participant repeatedly declines a referral to substance use treatment. What does the ethical/boundary-respecting response look like?",
+        options: [
+          "Keep pushing the same referral at every interaction until they agree",
+          "Respect their decision, continue offering support and information, and don't make continued shelter stay contingent on accepting the referral",
+          "Document their refusal as grounds for discharge"
+        ],
+        correctIndex: 1,
+        feedback: {
+          correct: "Right. Self-determination means the participant's choice is respected — service continues, and the referral stays available without becoming a condition of their stay.",
+          incorrect: "Pressuring or discharging a participant over a declined referral violates both the standard's self-determination right and its explicit rule that substance treatment is voluntary."
+        }
+      }
+    }
+  ],
+  quiz: {
+    passScore: 80,
+    questions: [
+      {
+        id: "eq1",
+        prompt: "What kind of relationship must shelter services be provided within, according to participant rights?",
+        options: [
+          "A friendship-based relationship to build trust",
+          "A professional relationship based on valid, informed consent",
+          "A purely transactional relationship with minimal staff engagement",
+          "Whatever relationship the staff member is most comfortable with"
+        ],
+        correctIndex: 1,
+        explain: "The standard ties professionalism directly to the integrity of informed consent, given the power dynamics inherent in the shelter relationship.",
+        cite: "Section A.7(f)"
+      },
+      {
+        id: "eq2",
+        prompt: "Why does the standard treat favoritism as a serious concern, even when it comes from good intentions?",
+        options: [
+          "It doesn't — only deliberate, malicious favoritism is addressed",
+          "Because uneven treatment damages trust and creates perceptions of unfairness regardless of the staff member's intent",
+          "Favoritism is only a concern if it's reported in writing",
+          "It's a concern only for paid staff, not volunteers"
+        ],
+        correctIndex: 1,
+        explain: "Consistent application is required precisely because the corrosive effect on trust doesn't depend on whether favoritism was intentional.",
+        cite: "Use of Standards section; Section G.1.1"
+      },
+      {
+        id: "eq3",
+        prompt: "Can a participant be discharged solely for declining to participate in support services?",
+        options: [
+          "Yes, participation is mandatory",
+          "No — participants have the right to participate in support services voluntarily and not be discharged solely for lack of participation",
+          "Only if the service is housing navigation",
+          "Yes, after a single declined offer"
+        ],
+        correctIndex: 1,
+        explain: "Voluntary participation is an explicit participant right — lack of participation in (most) services isn't valid grounds for discharge on its own.",
+        cite: "Section A.7(j)"
+      },
+      {
+        id: "eq4",
+        prompt: "A staff member believes a participant should accept a specific housing option the participant doesn't want. What does self-determination require?",
+        options: [
+          "Staff should make acceptance a condition of continued shelter stay",
+          "The participant's own goal-setting and choice should be respected, with staff continuing to offer information and support",
+          "Staff should stop offering any further housing assistance once a participant declines an option",
+          "Staff should escalate the decision to a supervisor to override the participant's choice"
+        ],
+        correctIndex: 1,
+        explain: "Self-determination means the participant directs their own goals; staff continue supporting and informing without overriding or conditioning services on a particular choice.",
+        cite: "Section A.7(e)"
+      },
+      {
+        id: "eq5",
+        prompt: "What is the connection between 'professional' and 'avoids favoritism' in the standard governing staff conduct?",
+        options: [
+          "There is no connection — they're unrelated requirements",
+          "They appear together because professional, dignity-based treatment and consistent, favoritism-free treatment are part of the same standard of conduct",
+          "Professionalism is about staff appearance, while favoritism is about scheduling",
+          "Favoritism only applies to supervisors, not direct-care staff"
+        ],
+        correctIndex: 1,
+        explain: "The standard explicitly pairs these ideas: dignified, trauma-informed, professional treatment that avoids favoritism describes one coherent standard of conduct toward all participants.",
+        cite: "Section G.1.1"
+      }
+    ]
+  },
+  remediation: {
+    intro: "Ethics and boundaries in this context come down to protecting participants' genuine agency — in how decisions get made, how relationships stay professional, and how fairly everyone is treated.",
+    points: [
+      { tag: "Professional relationship", text: "Required specifically because it protects participants' ability to give real, informed consent given the staff/participant power imbalance." },
+      { tag: "Favoritism is about impact, not intent", text: "Even well-meaning rapport that bends rules for one person damages trust for everyone." },
+      { tag: "Self-determination is a right", text: "Participants set their own goals; declining a service isn't grounds for discharge on its own." },
+      { tag: "Support, don't pressure", text: "Offering information and remaining available respects boundaries; repeated insistence doesn't." }
+    ]
+  }
+}
+
+];
+
+// Utility: flatten all questions for analytics if needed later
+const ALL_MODULE_IDS = MODULES.map(m => m.id);
+
+</script>
+<script>
+// ============================================================
+// Alameda County Shelter Standards — Training Hub
+// App logic: auth, routing, storage, lesson/quiz engines
+// ============================================================
+
+const COLOR_MAP = {
+  moss:   { bar: "#3d5c45", pale: "#e4ebe1" },
+  rust:   { bar: "#b5562f", pale: "#f5e1d6" },
+  gold:   { bar: "#b3892f", pale: "#f3e8cf" },
+  slate:  { bar: "#3a5066", pale: "#e1e8ee" },
+  berry:  { bar: "#8a3450", pale: "#f1dde4" }
+};
+
+let STATE = {
+  screen: "loading",      // loading | gate | hub | module | lesson | quiz | result | remediation | moderator
+  user: null,             // { name, role: 'learner'|'moderator' }
+  currentModuleId: null,
+  currentLessonIndex: 0,
+  quiz: {
+    moduleId: null,
+    questions: [],        // shuffled question set for this attempt
+    answers: [],           // selected index per question, parallel array
+    currentIndex: 0,
+    revealed: false,
+    isRemediationRound: false
+  },
+  remediationFocusIds: [], // question ids missed, to build remediation content
+  allUsers: [],            // for moderator view: list of {name}
+  allScores: []            // for moderator view: flattened score records
+};
+
+const app = document.getElementById("app");
+
+// ---------------- storage helpers ----------------
+
+function userKey(name){
+  return "user:" + name.toLowerCase().trim();
+}
+function scoreKey(name, moduleId, attemptId){
+  return "score:" + name.toLowerCase().trim() + ":" + moduleId + ":" + attemptId;
+}
+function progressKey(name, moduleId){
+  return "progress:" + name.toLowerCase().trim() + ":" + moduleId;
+}
+
+async function safeGet(key, shared){
+  try{
+    const r = await window.storage.get(key, !!shared);
+    return r ? r.value : null;
+  }catch(e){
+    return null;
+  }
+}
+async function safeSet(key, value, shared){
+  try{
+    await window.storage.set(key, value, !!shared);
+    return true;
+  }catch(e){
+    console.error("storage set failed", key, e);
+    return false;
+  }
+}
+async function safeList(prefix, shared){
+  try{
+    const r = await window.storage.list(prefix, !!shared);
+    return r ? r.keys : [];
+  }catch(e){
+    return [];
+  }
+}
+
+// ---------------- init ----------------
+
+async function init(){
+  render();
+  // try to restore a session from a lightweight personal marker
+  const savedName = await safeGet("session:lastuser", false);
+  if(savedName){
+    try{
+      const parsed = JSON.parse(savedName);
+      STATE.user = parsed;
+      STATE.screen = "hub";
+    }catch(e){
+      STATE.screen = "gate";
+    }
+  } else {
+    STATE.screen = "gate";
+  }
+  render();
+}
+
+// ---------------- module / progress helpers ----------------
+
+function getModule(id){
+  return MODULES.find(m => m.id === id);
+}
+
+async function getUserProgress(moduleId){
+  const raw = await safeGet(progressKey(STATE.user.name, moduleId), false);
+  if(!raw) return { lessonsDone: [], attempts: [] };
+  try{ return JSON.parse(raw); } catch(e){ return { lessonsDone: [], attempts: [] }; }
+}
+
+async function saveUserProgress(moduleId, progress){
+  await safeSet(progressKey(STATE.user.name, moduleId), JSON.stringify(progress), false);
+}
+
+async function markLessonDone(moduleId, lessonId){
+  const progress = await getUserProgress(moduleId);
+  if(!progress.lessonsDone.includes(lessonId)){
+    progress.lessonsDone.push(lessonId);
+  }
+  await saveUserProgress(moduleId, progress);
+}
+
+async function recordAttempt(moduleId, result){
+  // result: { date, score, passed, total, correct, missedIds, isRemediation }
+  const progress = await getUserProgress(moduleId);
+  progress.attempts.push(result);
+  await saveUserProgress(moduleId, progress);
+
+  // also write a "shared" moderator-visible record (private to moderator + this learner by convention;
+  // moderator dashboard reads all shared score: keys, learner dashboard reads only their own progress)
+  const attemptId = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  const record = {
+    learner: STATE.user.name,
+    moduleId: moduleId,
+    moduleTitle: getModule(moduleId).title,
+    date: result.date,
+    score: result.score,
+    passed: result.passed,
+    isRemediation: !!result.isRemediation
+  };
+  await safeSet(scoreKey(STATE.user.name, moduleId, attemptId), JSON.stringify(record), true);
+
+  // register learner name in a shared roster so moderator can see who has taken anything
+  await registerLearnerInRoster();
+}
+
+async function registerLearnerInRoster(){
+  const raw = await safeGet("roster:learners", true);
+  let list = [];
+  if(raw){
+    try{ list = JSON.parse(raw); } catch(e){ list = []; }
+  }
+  if(!list.includes(STATE.user.name)){
+    list.push(STATE.user.name);
+    await safeSet("roster:learners", JSON.stringify(list), true);
+  }
+}
+
+function bestAttempt(attempts){
+  if(!attempts || attempts.length === 0) return null;
+  return attempts.reduce((best, a) => (a.score > best.score ? a : best), attempts[0]);
+}
+
+// ---------------- screen: GATE ----------------
+
+function renderGate(){
+  app.innerHTML = `
+    <div class="gate-wrap">
+      <div class="gate-card">
+        <h1>Shelter Standards Training</h1>
+        <p class="sub">Sign in to begin or resume your required trainings. Your scores are kept private between you and your training moderator.</p>
+
+        <div class="field">
+          <label for="gname">Your name</label>
+          <input id="gname" type="text" placeholder="e.g. Jordan Alvarez" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label>I am signing in as a...</label>
+          <div class="role-toggle">
+            <button class="role-btn active" id="role-learner" type="button">Learner / staff</button>
+            <button class="role-btn" id="role-moderator" type="button">Moderator</button>
+          </div>
+        </div>
+
+        <div id="modpass-field" style="display:none;" class="field">
+          <label for="gmodpass">Moderator access code</label>
+          <input id="gmodpass" type="password" placeholder="Provided by your administrator" autocomplete="off" />
+          <div style="font-size:12px;color:var(--ink-soft);margin-top:6px;">Default code: <code>SHELTER2026</code> (change this in app.js for production use)</div>
+        </div>
+
+        <button class="btn btn-primary" id="enter-btn" style="width:100%;justify-content:center;display:flex;margin-top:6px;">Continue</button>
+        <div class="gate-error" id="gate-error"></div>
+      </div>
+    </div>
+  `;
+
+  let role = "learner";
+  document.getElementById("role-learner").onclick = () => {
+    role = "learner";
+    document.getElementById("role-learner").classList.add("active");
+    document.getElementById("role-moderator").classList.remove("active");
+    document.getElementById("modpass-field").style.display = "none";
+  };
+  document.getElementById("role-moderator").onclick = () => {
+    role = "moderator";
+    document.getElementById("role-moderator").classList.add("active");
+    document.getElementById("role-learner").classList.remove("active");
+    document.getElementById("modpass-field").style.display = "block";
+  };
+
+  document.getElementById("enter-btn").onclick = async () => {
+    const name = document.getElementById("gname").value.trim();
+    const errEl = document.getElementById("gate-error");
+    errEl.style.display = "none";
+    if(!name){
+      errEl.textContent = "Please enter your name to continue.";
+      errEl.style.display = "block";
+      return;
+    }
+    if(role === "moderator"){
+      const code = document.getElementById("gmodpass").value;
+      if(code !== "SHELTER2026"){
+        errEl.textContent = "That access code isn't correct. Check with your administrator.";
+        errEl.style.display = "block";
+        return;
+      }
+    }
+    STATE.user = { name: name, role: role };
+    await safeSet("session:lastuser", JSON.stringify(STATE.user), false);
+    if(role === "moderator"){
+      STATE.screen = "moderator";
+    } else {
+      await registerLearnerInRoster();
+      STATE.screen = "hub";
+    }
+    render();
+  };
+}
+
+// ---------------- topbar (shared across logged-in screens) ----------------
+
+function renderTopbar(){
+  const roleLabel = STATE.user.role === "moderator" ? "Moderator" : "Learner";
+  return `
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="brand" id="brand-home">
+          <span class="mark">Shelter Standards</span>
+          <span class="tag">Training Hub</span>
+        </div>
+        <div class="topbar-right">
+          <span class="who"><b>${escapeHtml(STATE.user.name)}</b> &middot; ${roleLabel}</span>
+          <button class="btn-link" id="signout-btn">Sign out</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function wireTopbar(){
+  document.getElementById("brand-home").onclick = () => {
+    STATE.screen = STATE.user.role === "moderator" ? "moderator" : "hub";
+    render();
+  };
+  document.getElementById("signout-btn").onclick = async () => {
+    await safeSet("session:lastuser", "", false);
+    STATE.user = null;
+    STATE.screen = "gate";
+    render();
+  };
+}
+
+// ---------------- screen: HUB ----------------
+
+async function renderHub(){
+  app.innerHTML = renderTopbar() + `<div id="hub-body" class="screen"><div class="empty-state">Loading your trainings…</div></div>`;
+  wireTopbar();
+
+  // gather progress for all modules
+  const moduleStatuses = [];
+  for(const m of MODULES){
+    const progress = await getUserProgress(m.id);
+    const best = bestAttempt(progress.attempts);
+    const lessonsTotal = m.lessons.length;
+    const lessonsDone = progress.lessonsDone.length;
+    moduleStatuses.push({ module: m, progress, best, lessonsDone, lessonsTotal });
+  }
+
+  const completedCount = moduleStatuses.filter(s => s.best && s.best.passed).length;
+  const inProgressCount = moduleStatuses.filter(s => !(s.best && s.best.passed) && s.lessonsDone > 0).length;
+  const notStartedCount = moduleStatuses.filter(s => s.lessonsDone === 0 && !s.best).length;
+  const avgScore = (() => {
+    const scored = moduleStatuses.filter(s => s.best);
+    if(scored.length === 0) return null;
+    return Math.round(scored.reduce((sum,s) => sum + s.best.score, 0) / scored.length);
+  })();
+
+  const cardsHtml = moduleStatuses.map(s => {
+    const c = COLOR_MAP[s.module.color] || COLOR_MAP.moss;
+    let pillHtml, scoreHtml = "";
+    if(s.best && s.best.passed){
+      pillHtml = `<span class="pill pill-done"><i class="ti ti-check" aria-hidden="true"></i> Passed</span>`;
+      scoreHtml = `<span class="score-chip pass">${s.best.score}%</span>`;
+    } else if(s.best && !s.best.passed){
+      pillHtml = `<span class="pill pill-progress">Retake needed</span>`;
+      scoreHtml = `<span class="score-chip fail">${s.best.score}%</span>`;
+    } else if(s.lessonsDone > 0){
+      pillHtml = `<span class="pill pill-progress">In progress</span>`;
+    } else {
+      pillHtml = `<span class="pill pill-new">Not started</span>`;
+    }
+    const pct = Math.round((s.lessonsDone / s.lessonsTotal) * 100);
+    return `
+      <div class="mod-card" data-module="${s.module.id}">
+        <div class="bar" style="background:${c.bar};"></div>
+        <div class="num">Module ${String(s.module.order).padStart(2,"0")}</div>
+        <h3>${escapeHtml(s.module.title)}</h3>
+        <div class="desc">${escapeHtml(s.module.short)}</div>
+        <div class="pbar"><div style="width:${pct}%; background:${c.bar};"></div></div>
+        <div class="meta-row">
+          ${pillHtml}
+          ${scoreHtml}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("hub-body").innerHTML = `
+    <div class="hub-hero">
+      <h1>Required staff trainings</h1>
+      <p>Nine bite-sized modules covering the trainings required within 30 days of hire under Alameda County Emergency Shelter Standards, Section G.6. Work through the lessons in each module, then take the quiz to confirm you've got it.</p>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-card"><div class="n">${completedCount}/${MODULES.length}</div><div class="l">Modules passed</div></div>
+      <div class="stat-card"><div class="n">${inProgressCount}</div><div class="l">In progress</div></div>
+      <div class="stat-card"><div class="n">${notStartedCount}</div><div class="l">Not started</div></div>
+      <div class="stat-card"><div class="n">${avgScore === null ? "—" : avgScore + "%"}</div><div class="l">Average quiz score</div></div>
+    </div>
+
+    <div class="section-label">Your modules</div>
+    <div class="module-grid">
+      ${cardsHtml}
+    </div>
+  `;
+
+  document.querySelectorAll(".mod-card").forEach(card => {
+    card.onclick = () => {
+      STATE.currentModuleId = card.getAttribute("data-module");
+      STATE.screen = "module";
+      render();
+    };
+  });
+}
+
+// ---------------- screen: MODULE DETAIL ----------------
+
+async function renderModuleDetail(){
+  const m = getModule(STATE.currentModuleId);
+  const progress = await getUserProgress(m.id);
+  const best = bestAttempt(progress.attempts);
+  const c = COLOR_MAP[m.color] || COLOR_MAP.moss;
+
+  const lessonsHtml = m.lessons.map((l, idx) => {
+    const done = progress.lessonsDone.includes(l.id);
+    return `
+      <div class="lesson-row ${done ? "done" : ""}" data-idx="${idx}">
+        <div class="check">${done ? '<i class="ti ti-check"></i>' : ""}</div>
+        <div class="ltext">
+          <div class="ltitle">${idx+1}. ${escapeHtml(l.title)}</div>
+          <div class="lsub">${l.tag} &middot; ~${l.minutes} min</div>
+        </div>
+        <div class="arrow"><i class="ti ti-chevron-right"></i></div>
+      </div>
+    `;
+  }).join("");
+
+  const allLessonsDone = progress.lessonsDone.length === m.lessons.length;
+  let quizCtaText = "Complete all lessons above to unlock the quiz.";
+  let quizBtnLabel = "Locked";
+  let quizDisabled = true;
+  if(allLessonsDone){
+    quizDisabled = false;
+    if(best){
+      quizCtaText = best.passed
+        ? `Best score: ${best.score}%. You can retake any time to refresh your knowledge.`
+        : `Best score: ${best.score}%. Passing requires ${m.quiz.passScore}%. Review the lessons or jump back in.`;
+      quizBtnLabel = "Retake quiz";
+    } else {
+      quizCtaText = `${m.quiz.questions.length} questions &middot; ${m.quiz.passScore}% needed to pass`;
+      quizBtnLabel = "Start quiz";
+    }
+  }
+
+  app.innerHTML = renderTopbar() + `
+    <div class="screen">
+      <div class="crumbs"><button id="back-hub">&larr; All modules</button></div>
+      <div class="mod-header">
+        <div class="eyebrow">Module ${String(m.order).padStart(2,"0")} &middot; Required within ${m.dueWindow} of hire</div>
+        <h1>${escapeHtml(m.title)}</h1>
+        <p>${escapeHtml(m.description)}</p>
+        <p style="font-size:12.5px;color:var(--ink-soft);"><i class="ti ti-bookmark" aria-hidden="true" style="font-size:13px;vertical-align:-1px;"></i> Source: ${escapeHtml(m.sourceRef)}</p>
+      </div>
+
+      <div class="section-label">Lessons</div>
+      <div class="lesson-list">${lessonsHtml}</div>
+
+      <div class="quiz-cta">
+        <div class="qtext">
+          <h3><i class="ti ti-clipboard-text" aria-hidden="true" style="margin-right:6px;"></i>Module quiz</h3>
+          <p>${quizCtaText}</p>
+        </div>
+        <button class="btn btn-primary" id="start-quiz-btn" ${quizDisabled ? "disabled" : ""}>${quizBtnLabel}</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("back-hub").onclick = () => { STATE.screen = "hub"; render(); };
+  document.querySelectorAll(".lesson-row").forEach(row => {
+    row.onclick = () => {
+      STATE.currentLessonIndex = parseInt(row.getAttribute("data-idx"), 10);
+      STATE.screen = "lesson";
+      render();
+    };
+  });
+  if(!quizDisabled){
+    document.getElementById("start-quiz-btn").onclick = () => startQuiz(m.id, false);
+  }
+}
+
+// ---------------- screen: LESSON ----------------
+
+async function renderLesson(){
+  const m = getModule(STATE.currentModuleId);
+  const idx = STATE.currentLessonIndex;
+  const lesson = m.lessons[idx];
+  const total = m.lessons.length;
+  const pct = Math.round(((idx) / total) * 100);
+
+  app.innerHTML = renderTopbar() + `
+    <div class="screen">
+      <div class="crumbs"><button id="back-module">&larr; ${escapeHtml(m.title)}</button></div>
+      <div class="lesson-progress-bar"><div style="width:${pct}%;"></div></div>
+      <div class="lesson-card">
+        <div class="ltag">${lesson.tag} &middot; Lesson ${idx+1} of ${total}</div>
+        <h2>${escapeHtml(lesson.title)}</h2>
+        <div class="body">${lesson.body}</div>
+        <div class="check-interaction" id="check-interaction">
+          <div class="check-q"><i class="ti ti-bulb" aria-hidden="true" style="margin-right:6px;color:var(--gold);"></i>${escapeHtml(lesson.check.q)}</div>
+          <div class="opt-list" id="check-opts">
+            ${lesson.check.options.map((opt, i) => `<button class="opt-btn" data-i="${i}">${escapeHtml(opt)}</button>`).join("")}
+          </div>
+          <div id="check-feedback"></div>
+        </div>
+      </div>
+      <div class="lesson-nav">
+        <button class="btn" id="prev-lesson" ${idx === 0 ? "disabled" : ""}>&larr; Previous</button>
+        <button class="btn btn-primary" id="next-lesson" disabled>Mark complete &amp; continue &rarr;</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("back-module").onclick = () => { STATE.screen = "module"; render(); };
+  document.getElementById("prev-lesson").onclick = () => {
+    if(idx > 0){ STATE.currentLessonIndex = idx - 1; render(); }
+  };
+
+  let answered = false;
+  document.querySelectorAll("#check-opts .opt-btn").forEach(btn => {
+    btn.onclick = () => {
+      if(answered) return;
+      answered = true;
+      const chosen = parseInt(btn.getAttribute("data-i"), 10);
+      const correct = lesson.check.correctIndex;
+      document.querySelectorAll("#check-opts .opt-btn").forEach((b, i) => {
+        b.disabled = true;
+        if(i === correct) b.classList.add("correct");
+        else if(i === chosen) b.classList.add("incorrect");
+        else b.classList.add("dim");
+      });
+      const fb = document.getElementById("check-feedback");
+      const isCorrect = chosen === correct;
+      fb.innerHTML = `<div class="feedback-note ${isCorrect ? "good" : "bad"}">${escapeHtml(isCorrect ? lesson.check.feedback.correct : lesson.check.feedback.incorrect)}</div>`;
+      document.getElementById("next-lesson").disabled = false;
+    };
+  });
+
+  document.getElementById("next-lesson").onclick = async () => {
+    await markLessonDone(m.id, lesson.id);
+    if(idx < total - 1){
+      STATE.currentLessonIndex = idx + 1;
+      render();
+    } else {
+      STATE.screen = "module";
+      render();
+    }
+  };
+}
+
+// ---------------- screen: QUIZ ----------------
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz(moduleId, isRemediation, focusIds){
+  const m = getModule(moduleId);
+  let qSet = m.quiz.questions;
+  if(isRemediation && focusIds && focusIds.length > 0){
+    qSet = m.quiz.questions.filter(q => focusIds.includes(q.id));
+    if(qSet.length === 0) qSet = m.quiz.questions;
+  }
+  STATE.quiz = {
+    moduleId: moduleId,
+    questions: shuffle(qSet),
+    answers: new Array(qSet.length).fill(null),
+    currentIndex: 0,
+    revealed: false,
+    isRemediationRound: !!isRemediation
+  };
+  STATE.screen = "quiz";
+  render();
+}
+
+function renderQuiz(){
+  const m = getModule(STATE.quiz.moduleId);
+  const qz = STATE.quiz;
+  const q = qz.questions[qz.currentIndex];
+  const total = qz.questions.length;
+  const pct = Math.round((qz.currentIndex / total) * 100);
+  const selected = qz.answers[qz.currentIndex];
+
+  app.innerHTML = renderTopbar() + `
+    <div class="screen">
+      <div class="quiz-head">
+        <h2>${qz.isRemediationRound ? "Retake: " : ""}${escapeHtml(m.title)} quiz</h2>
+        <div class="quiz-counter">Question ${qz.currentIndex+1} of ${total}</div>
+      </div>
+      <div class="quiz-progress"><div style="width:${pct}%;"></div></div>
+
+      <div class="quiz-card">
+        <div class="qkind">${qz.isRemediationRound ? "Focused retake" : "Scenario check"}</div>
+        <div class="qprompt">${escapeHtml(q.prompt)}</div>
+        <div class="quiz-opts" id="quiz-opts">
+          ${q.options.map((opt, i) => {
+            let cls = "quiz-opt";
+            if(qz.revealed){
+              if(i === q.correctIndex) cls += " reveal-correct";
+              else if(i === selected) cls += " reveal-incorrect";
+            } else if(i === selected){
+              cls += " selected";
+            }
+            return `<div class="${cls}" data-i="${i}">
+              <div class="letter">${String.fromCharCode(65+i)}</div>
+              <div class="otext">${escapeHtml(opt)}</div>
+            </div>`;
+          }).join("")}
+        </div>
+        <div id="quiz-explain-wrap"></div>
+      </div>
+
+      <div class="quiz-footer">
+        <button class="btn btn-primary" id="quiz-next-btn" ${selected === null ? "disabled" : ""}>
+          ${qz.revealed ? (qz.currentIndex === total - 1 ? "See results" : "Next question") : "Check answer"}
+        </button>
+      </div>
+    </div>
+  `;
+
+  if(qz.revealed){
+    const isCorrect = selected === q.correctIndex;
+    document.getElementById("quiz-explain-wrap").innerHTML = `
+      <div class="quiz-explain ${isCorrect ? "good" : "bad"}">
+        <span class="qe-label">${isCorrect ? "Correct" : "Not quite"}</span>
+        ${escapeHtml(q.explain)}
+        <div class="qe-cite">${escapeHtml(q.cite)}</div>
+      </div>
+    `;
+  }
+
+  document.querySelectorAll("#quiz-opts .quiz-opt").forEach(opt => {
+    opt.onclick = () => {
+      if(qz.revealed) return;
+      const i = parseInt(opt.getAttribute("data-i"), 10);
+      qz.answers[qz.currentIndex] = i;
+      render();
+    };
+  });
+
+  document.getElementById("quiz-next-btn").onclick = () => {
+    if(!qz.revealed){
+      qz.revealed = true;
+      render();
+      return;
+    }
+    if(qz.currentIndex < total - 1){
+      qz.currentIndex += 1;
+      qz.revealed = false;
+      render();
+    } else {
+      finishQuiz();
+    }
+  };
+}
+
+async function finishQuiz(){
+  const qz = STATE.quiz;
+  const m = getModule(qz.moduleId);
+  let correctCount = 0;
+  const missed = [];
+  qz.questions.forEach((q, i) => {
+    if(qz.answers[i] === q.correctIndex) correctCount++;
+    else missed.push(q);
+  });
+  const total = qz.questions.length;
+  const score = Math.round((correctCount / total) * 100);
+  const passed = score >= m.quiz.passScore;
+
+  const result = {
+    date: new Date().toISOString(),
+    score: score,
+    correct: correctCount,
+    total: total,
+    passed: passed,
+    missedIds: missed.map(q => q.id),
+    isRemediation: qz.isRemediationRound
+  };
+
+  await recordAttempt(qz.moduleId, result);
+
+  STATE.lastResult = result;
+  STATE.lastMissedQuestions = missed;
+  STATE.screen = "result";
+  render();
+}
+
+// ---------------- screen: RESULT ----------------
+
+function renderResult(){
+  const m = getModule(STATE.quiz.moduleId);
+  const r = STATE.lastResult;
+  const missed = STATE.lastMissedQuestions;
+
+  const missListHtml = missed.length === 0 ? "" : `
+    <div class="miss-list">
+      <h4>Questions to revisit</h4>
+      ${missed.map(q => `<div class="miss-item"><strong>${escapeHtml(q.prompt)}</strong><br><span style="color:var(--ink-soft);">${escapeHtml(q.cite)}</span></div>`).join("")}
+    </div>
+  `;
+
+  let actionHtml;
+  if(r.passed){
+    actionHtml = `
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn btn-primary" id="back-to-hub-btn">Back to all modules</button>
+        ${missed.length > 0 ? `<button class="btn" id="review-anyway-btn">Review missed questions</button>` : ""}
+      </div>
+    `;
+  } else {
+    actionHtml = `
+      <p class="result-sub">A short refresher is ready, focused on exactly what you missed. After that, you'll get another shot at the quiz.</p>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn btn-primary" id="go-remediation-btn">Start refresher &rarr;</button>
+        <button class="btn" id="back-to-hub-btn2">Back to all modules</button>
+      </div>
+    `;
+  }
+
+  app.innerHTML = renderTopbar() + `
+    <div class="screen">
+      <div class="result-wrap">
+        <div class="result-ring ${r.passed ? "pass" : "fail"}">
+          <div class="pct">${r.score}%</div>
+          <div class="of">${r.correct} of ${r.total}</div>
+        </div>
+        <h2 class="result-title">${r.passed ? "Module passed" : "Not quite there yet"}</h2>
+        <p class="result-sub">${r.passed
+          ? `You cleared the ${m.quiz.passScore}% threshold for ${escapeHtml(m.title)}. Nice work.`
+          : `${escapeHtml(m.title)} requires ${m.quiz.passScore}% to pass. You're not far off.`}</p>
+        ${r.passed ? missListHtml : ""}
+        ${actionHtml}
+      </div>
+    </div>
+  `;
+
+  const backBtn = document.getElementById("back-to-hub-btn") || document.getElementById("back-to-hub-btn2");
+  if(backBtn) backBtn.onclick = () => { STATE.screen = "hub"; render(); };
+
+  const reviewBtn = document.getElementById("review-anyway-btn");
+  if(reviewBtn) reviewBtn.onclick = () => {
+    STATE.remediationFocusIds = missed.map(q => q.id);
+    STATE.screen = "remediation";
+    render();
+  };
+
+  const goRemed = document.getElementById("go-remediation-btn");
+  if(goRemed) goRemed.onclick = () => {
+    STATE.remediationFocusIds = missed.map(q => q.id);
+    STATE.screen = "remediation";
+    render();
+  };
+}
+
+// ---------------- screen: REMEDIATION ----------------
+
+function renderRemediation(){
+  const m = getModule(STATE.quiz.moduleId);
+  const focusIds = STATE.remediationFocusIds;
+  const missedQuestions = m.quiz.questions.filter(q => focusIds.includes(q.id));
+
+  const missedDetailHtml = missedQuestions.map(q => `
+    <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.08);">
+      <div style="font-weight:600;font-size:14.5px;margin-bottom:6px;">${escapeHtml(q.prompt)}</div>
+      <div style="font-size:14px;">${escapeHtml(q.explain)}</div>
+      <div style="font-size:12.5px;opacity:.75;font-style:italic;margin-top:6px;">${escapeHtml(q.cite)}</div>
+    </div>
+  `).join("");
+
+  app.innerHTML = renderTopbar() + `
+    <div class="screen">
+      <div class="crumbs"><button id="back-module-r">&larr; ${escapeHtml(m.title)}</button></div>
+
+      <div class="remed-card">
+        <div class="rtag">Targeted refresher</div>
+        <h2>Let's re-teach what you missed</h2>
+        <div class="rbody">
+          <p>${escapeHtml(m.remediation.intro)}</p>
+          ${m.remediation.points.map(p => `<p><strong>${escapeHtml(p.tag)}:</strong> ${escapeHtml(p.text)}</p>`).join("")}
+        </div>
+      </div>
+
+      <div class="section-label">The specific questions you missed</div>
+      <div class="lesson-card" style="padding:24px 26px;">
+        ${missedDetailHtml}
+      </div>
+
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn btn-primary" id="retake-quiz-btn">Take the quiz again &rarr;</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("back-module-r").onclick = () => { STATE.screen = "module"; render(); };
+  document.getElementById("retake-quiz-btn").onclick = () => {
+    // Full retake (not just missed questions) to confirm overall mastery,
+    // but flagged as a remediation-round attempt for tracking.
+    startQuiz(m.id, true, null);
+  };
+}
+
+// ---------------- screen: MODERATOR DASHBOARD ----------------
+
+async function renderModerator(){
+  app.innerHTML = renderTopbar() + `<div id="mod-body" class="screen"><div class="empty-state">Loading learner records…</div></div>`;
+  wireTopbar();
+
+  const rosterRaw = await safeGet("roster:learners", true);
+  let learners = [];
+  if(rosterRaw){
+    try{ learners = JSON.parse(rosterRaw); } catch(e){ learners = []; }
+  }
+
+  // pull all shared score records
+  const keys = await safeList("score:", true);
+  const records = [];
+  for(const k of keys){
+    const raw = await safeGet(k, true);
+    if(raw){
+      try{ records.push(JSON.parse(raw)); } catch(e){ /* skip */ }
+    }
+  }
+  records.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  STATE.allUsers = learners;
+  STATE.allScores = records;
+
+  renderModeratorBody("all");
+}
+
+function renderModeratorBody(filterModuleId){
+  const learners = STATE.allUsers;
+  const records = STATE.allScores;
+
+  // best score per learner per module
+  const bestMap = {}; // key: learner|moduleId -> record
+  records.forEach(r => {
+    const key = r.learner.toLowerCase() + "|" + r.moduleId;
+    if(!bestMap[key] || r.score > bestMap[key].score){
+      bestMap[key] = r;
+    }
+  });
+
+  const passedTotal = Object.values(bestMap).filter(r => r.passed).length;
+  const attemptsTotal = records.length;
+  const learnerCount = learners.length;
+  const avgScore = records.length ? Math.round(records.reduce((s,r)=>s+r.score,0)/records.length) : null;
+
+  const filterChips = `
+    <div class="filter-row">
+      <button class="chip-filter ${filterModuleId === "all" ? "active" : ""}" data-mod="all">All modules</button>
+      ${MODULES.map(m => `<button class="chip-filter ${filterModuleId === m.id ? "active" : ""}" data-mod="${m.id}">${escapeHtml(m.title)}</button>`).join("")}
+    </div>
+  `;
+
+  let rows = records;
+  if(filterModuleId !== "all"){
+    rows = records.filter(r => r.moduleId === filterModuleId);
+  }
+
+  const tableRows = rows.length === 0 ? `
+    <tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:24px;">No quiz attempts recorded yet for this view.</td></tr>
+  ` : rows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.learner)}</td>
+      <td>${escapeHtml(r.moduleTitle)}</td>
+      <td><span class="score-badge ${r.passed ? "pass" : "fail"}">${r.score}%</span></td>
+      <td>${r.passed ? "Passed" : "Not passed"}</td>
+      <td>${r.isRemediation ? "Refresher retake" : "Initial attempt"}</td>
+      <td>${formatDate(r.date)}</td>
+    </tr>
+  `).join("");
+
+  document.getElementById("mod-body").innerHTML = `
+    <div class="hub-hero">
+      <h1>Moderator dashboard</h1>
+      <p>Quiz results across all learners. These records are visible only to moderators and to the learner who took each quiz — never shared with other learners.</p>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-card"><div class="n">${learnerCount}</div><div class="l">Learners registered</div></div>
+      <div class="stat-card"><div class="n">${attemptsTotal}</div><div class="l">Total quiz attempts</div></div>
+      <div class="stat-card"><div class="n">${passedTotal}/${learnerCount * MODULES.length || 0}</div><div class="l">Module passes (best attempts)</div></div>
+      <div class="stat-card"><div class="n">${avgScore === null ? "—" : avgScore + "%"}</div><div class="l">Average attempt score</div></div>
+    </div>
+
+    <div class="section-label">Filter by module</div>
+    ${filterChips}
+
+    <div class="section-label">Attempt history</div>
+    <div style="overflow-x:auto;">
+      <table class="mod-dash-table">
+        <thead>
+          <tr><th>Learner</th><th>Module</th><th>Score</th><th>Result</th><th>Type</th><th>Date</th></tr>
+        </thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+    </div>
+  `;
+
+  document.querySelectorAll(".chip-filter").forEach(chip => {
+    chip.onclick = () => {
+      renderModeratorBody(chip.getAttribute("data-mod"));
+    };
+  });
+}
+
+// ---------------- utilities ----------------
+
+function escapeHtml(str){
+  if(str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function formatDate(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { month:"short", day:"numeric", year:"numeric" }) + " " +
+           d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
+  }catch(e){
+    return iso;
+  }
+}
+
+// ---------------- master render ----------------
+
+function render(){
+  switch(STATE.screen){
+    case "loading":
+      app.innerHTML = `<div class="empty-state">Loading…</div>`;
+      break;
+    case "gate":
+      renderGate();
+      break;
+    case "hub":
+      renderHub();
+      break;
+    case "module":
+      renderModuleDetail();
+      break;
+    case "lesson":
+      renderLesson();
+      break;
+    case "quiz":
+      renderQuiz();
+      break;
+    case "result":
+      renderResult();
+      break;
+    case "remediation":
+      renderRemediation();
+      break;
+    case "moderator":
+      renderModerator();
+      break;
+    default:
+      app.innerHTML = `<div class="empty-state">Something went wrong. Please refresh.</div>`;
+  }
+}
+
+init();
+
+</script>
+</body>
+</html>
