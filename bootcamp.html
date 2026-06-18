@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Find Bootcamp</title>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="8c2f1ff1-33a0-45bf-9950-5dda849c137c"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Ballet&family=Inter:wght@400;500;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:#005B8D;
+  --lavender:#B5B1D8;
+  --gray:#70727C;
+  --bg:#FAFAF9;
+  --surface:#FFFFFF;
+  --text:#1C1A18;
+  --text2:#6E6A63;
+  --text3:#9E9A93;
+  --border:#E5E2DC;
+  --font:'Inter',-apple-system,sans-serif;
+  --display:'Ballet',cursive;
+}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 40px;border-bottom:1px solid var(--border);}
+.nav-mark{font-family:var(--font);font-size:14px;font-weight:600;color:var(--navy);text-decoration:none;letter-spacing:.02em;}
+.nav-back{font-size:13px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .12s;}
+.nav-back:hover{color:var(--navy);}
+
+/* HERO */
+.hero{max-width:640px;margin:44px auto 36px;padding:0 24px;text-align:center;}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;}
+.hero h1{font-size:32px;font-weight:600;line-height:1.15;margin-bottom:14px;color:var(--text);font-family:var(--font);}
+.hero p{font-size:15px;color:var(--text2);max-width:480px;margin:0 auto 20px;}
+
+.download-btn{display:inline-flex;align-items:center;gap:10px;background:var(--navy);color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:opacity .15s;}
+.download-btn:hover{opacity:.88;}
+.download-btn svg{width:16px;height:16px;}
+
+/* STEPS */
+.steps-wrap{max-width:700px;margin:0 auto 64px;padding:0 24px;}
+.steps-label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:20px;}
+
+.step{display:grid;grid-template-columns:44px 1fr;gap:0 16px;margin-bottom:2px;}
+.step-num{width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:8px;}
+.step-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:5px;}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.65;}
+.step-desc strong{color:var(--text);font-weight:500;}
+.step-tag{display:inline-block;font-size:11px;font-weight:500;background:var(--lavender);color:var(--navy);padding:2px 10px;border-radius:20px;margin-top:8px;}
+
+.connector{width:2px;height:12px;background:var(--border);margin:0 auto 0 21px;}
+
+/* AUDIT CALLOUT */
+.audit-box{background:var(--surface);border:1.5px solid var(--navy);border-radius:10px;padding:16px 20px;margin:20px 0 8px;}
+.audit-box .step-title{color:var(--navy);}
+
+/* DOWNLOAD SECTION */
+.download-section{background:var(--navy);border-radius:12px;max-width:700px;margin:0 auto 64px;padding:32px 36px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.download-section h2{font-size:20px;font-weight:600;color:#fff;margin-bottom:6px;}
+.download-section p{font-size:13px;color:rgba(255,255,255,.7);max-width:380px;}
+.download-btn-white{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--navy);padding:12px 24px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;white-space:nowrap;transition:opacity .15s;flex-shrink:0;}
+.download-btn-white:hover{opacity:.9;}
+
+/* FOOTER */
+footer{text-align:center;padding:32px 24px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);}
+footer a{color:var(--navy);text-decoration:none;}
+
+/* MOBILE */
+@media(max-width:600px){
+  .nav{padding:12px 20px;}
+  .hero{margin:36px auto 32px;}
+  .hero h1{font-size:28px;}
+  .hero h1 .accent{font-size:34px;}
+  .hero p{font-size:15px;}
+  .steps-wrap{margin-bottom:48px;}
+  .step{grid-template-columns:38px 1fr;gap:0 12px;}
+  .step-num{width:38px;height:38px;font-size:13px;}
+  .connector{margin-left:18px;}
+  .download-section{padding:24px;flex-direction:column;align-items:flex-start;margin:0 24px 48px;}
+  .download-btn-white{width:100%;justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-mark" href="index.html">RGM</a>
+  <a class="nav-back" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 12L6 8l4-4"/></svg>
+    Portfolio
+  </a>
+</nav>
+
+<section class="hero">
+  <p class="hero-eyebrow">A methodology, not a tool</p>
+  <h1>The Job Find Bootcamp</h1>
+  <p>A step-by-step system for landing a role in 30 days, built on honest match scoring, warm outreach over volume, and materials that actually sound like you.</p>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin:0 auto 28px;max-width:560px;text-align:left;">
+    <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;">This is a coach, not a generator.</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.65;">The goal is not just to help you get hired. It is to leave you a stronger candidate than when you started — with a clearer story, sharper instincts about what makes you unusual, and the ability to advocate for yourself in any future search. The tool educates as it executes.</div>
+  </div>
+
+  <p style="font-size:13px;color:var(--text3);margin-bottom:32px;font-style:italic;">Developed through a real, extended job search engagement. Every principle here was tested, corrected, and refined through actual applications, recruiter screens, and hiring manager outreach.</p>
+  <a class="download-btn" href="JobFindBootcamp_Instructions.md" download>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3M6 9l6 6 6-6M3 21h18"/></svg>
+    Download the instructions
+  </a>
+</section>
+
+<!-- SETTINGS SECTION -->
+<div style="max-width:760px;margin:0 auto 64px;padding:0 24px;">
+  <p class="steps-label">Before you start — recommended Claude setup</p>
+
+    <div style="background:#FFF8E7;border:1.5px solid #E8A000;border-radius:8px;padding:14px 20px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8A000" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div style="font-size:13px;color:#7A4F00;line-height:1.6;"><strong>This tool works significantly better inside a Claude Project.</strong> In a standalone conversation, context disappears when the session ends. Create a "Job Search" project in Claude and run the entire bootcamp inside it — this is the single most important setup step.</div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+
+    <div style="background:#F5F3FF;padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+      <div style="width:36px;height:36px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--navy);">Consider Claude Pro before starting</div>
+        <div style="font-size:13px;color:var(--text2);">The free tier is time-gated and will interrupt the process mid-search. A 30-day job search needs sustained, uninterrupted access.</div>
+      </div>
+    </div>
+
+    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
+
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:start;">
+        <div style="width:32px;height:32px;border-radius:6px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;">Use Projects</div>
+          <div style="font-size:13px;color:var(--text2);">Create a "Job Search" project in Claude and run the entire bootcamp inside it. Every conversation in a project shares context, so Claude builds a richer picture of you over time without needing a re-briefing every session. This is the single highest-leverage setting.</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:start;">
+        <div style="width:32px;height:32px;border-radius:6px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;">Turn on Memory</div>
+          <div style="font-size:13px;color:var(--text2);">Settings → Memory. When enabled, Claude automatically retains facts about you across conversations, building a richer 360 view over time without you needing to re-paste your history every session.</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:start;">
+        <div style="width:32px;height:32px;border-radius:6px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;">Turn on Web Search</div>
+          <div style="font-size:13px;color:var(--text2);">Required for the batch sourcing step. Without it Claude cannot pull live roles from the web. Enable in conversation settings before starting Step 4.</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:start;">
+        <div style="width:32px;height:32px;border-radius:6px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;">Turn on Code Execution and File Creation</div>
+          <div style="font-size:13px;color:var(--text2);">Allows Claude to generate downloadable resume and cover letter files rather than just pasting text. Enable in conversation settings.</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:start;">
+        <div style="width:32px;height:32px;border-radius:6px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;">Set your writing style</div>
+          <div style="font-size:13px;color:var(--text2);">Upload your writing sample once under Settings → Style and Claude will reference it automatically across conversations. This means every cover letter draft will be calibrated to your voice without you needing to remind Claude each time.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">Download and upload to Claude</div>
+      <div class="step-desc">Download the instruction file above and upload it to <strong><a href="https://claude.ai" target="_blank" style="color:var(--navy);">claude.ai</a></strong> in a new conversation. This trains Claude on the full methodology — honest match scoring, cover letter standards, outreach principles — without any personal information baked in. The system is yours to use with your own story.</div>
+      <span class="step-tag">claude.ai required</span>
+    </div>
+  </div>
+  <div class="connector"></div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">Upload your materials and build your 360 view</div>
+      <div class="step-desc">Upload three things: your <strong>resume</strong>, a <strong>writing sample</strong> (any piece of writing that sounds like you), and your <strong>LinkedIn profile</strong>. Claude will score how complete your 360 view is and tell you exactly what's missing. Then update your LinkedIn headline and About section before any applications go out — the right foundation before the first outreach.</div>
+      <span class="step-tag">360 completeness score</span>
+    </div>
+  </div>
+  <div class="connector"></div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-title">Upload job descriptions you're considering</div>
+      <div class="step-desc">Paste in the full JDs including the "About the Organization" section. Claude runs an honest match score against your profile using a two-part framework: <strong>can you do the actual work (60%)</strong> and <strong>do you match the stated requirements (40%)</strong>. It will name gaps directly, flag hard ATS filter risks, and check your full history before scoring anything as a gap. Then <strong>verify each role is live on the company careers page</strong> before building materials.</div>
+      <span class="step-tag">Honest match scoring</span>
+    </div>
+  </div>
+  <div class="connector"></div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <div class="step-title">Pattern recognition and batch sourcing</div>
+      <div class="step-desc">After three or more JDs, Claude identifies the pattern across your targets and sources a batch of 10–15 additional roles that fit your profile, prioritized by match score. You verify which ones are live. This replaces hours of manual job board searching with a focused, targeted list.</div>
+      <span class="step-tag">Batch sourcing</span>
+    </div>
+  </div>
+  <div class="connector"></div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <div class="step-title">Build the materials — resume, cover letter, outreach</div>
+      <div class="step-desc">For each confirmed role, Claude builds a <strong>one-page tailored resume</strong> with ATS-beating techniques baked in, a <strong>cover letter</strong> that opens on the company not on you and sounds like your writing sample, and <strong>outreach message options</strong> to pick from. You choose the outreach angle. Claude drafts the message in your voice. Warm outreach to hiring managers is always prioritized over cold ATS applications.</div>
+      <span class="step-tag">Resume · Cover letter · Outreach</span>
+    </div>
+  </div>
+  <div class="connector"></div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="audit-box">
+      <div class="step-title">Every 4–5 applications: the audit</div>
+      <div class="step-desc">After every four or five applications submitted, Claude pauses the search and runs a full audit: are materials getting stronger over time, does the LinkedIn About section still match the narrative, is warm outreach happening or just cold applications, and are there roles in the pipeline that should have been skipped. It also checks in on <strong>how you're doing</strong> — job searching is hard and the pace has to be sustainable. Recommendations before resuming.</div>
+      <span class="step-tag">Process · LinkedIn · Wellbeing</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="download-section" style="margin:0 24px 80px;max-width:calc(760px);margin-left:auto;margin-right:auto;">
+  <div>
+    <h2>Ready to start?</h2>
+    <p>Download the instructions, open Claude, and upload the file. The system takes it from there.</p>
+  </div>
+  <a class="download-btn-white" href="JobFindBootcamp_Instructions.md" download>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3M6 9l6 6 6-6M3 21h18"/></svg>
+    Download instructions
+  </a>
+</div>
+
+<footer>
+  Built by <a href="index.html">Ryan Guerrero Moreno</a> · <a href="https://github.com/RGM-Builds" target="_blank">github.com/RGM-Builds</a>
+  <br><br>
+  <span style="color:var(--text3);">Methodology developed by Ryan Guerrero Moreno. Free to use for personal job searching. Not for resale or redistribution as a commercial product.</span>
+</footer>
+
+</body>
+</html>
